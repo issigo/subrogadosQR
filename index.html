@@ -16,50 +16,31 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #1a1a1a; 
-      color: #ffffff;
-      margin: 0;
-      padding: 20px;
-      transition: background-color 0.4s ease;
+      color: #ffffff; margin: 0; padding: 20px; transition: background-color 0.4s ease;
     }
+    
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #222222;
-      padding: 15px 25px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 5px solid #d3a32a;
-      transition: all 0.4s ease;
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #222222; padding: 15px 25px; border-radius: 8px;
+      margin-bottom: 20px; border-left: 5px solid #d3a32a; transition: all 0.4s ease;
     }
-    .topbar-title {
-      font-size: 18px;
-      font-weight: bold;
-    }
-    /* El botón secreto */
-    .btn-secreto {
-      cursor: pointer;
-      user-select: none;
+    .topbar-title { font-size: 18px; font-weight: bold; }
+    .btn-secreto { cursor: pointer; user-select: none; }
+    
+    .topbar-controls { display: flex; align-items: center; gap: 15px; }
+    .btn-nuevo { 
+      background: #d3a32a; color: #000; padding: 8px 15px; border-radius: 4px; 
+      font-weight: bold; cursor: pointer; border: none; 
     }
     .topbar select {
-      background-color: #333333;
-      color: #ffffff;
-      border: 1px solid #555;
-      padding: 8px 15px;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
+      background-color: #333333; color: #ffffff; border: 1px solid #555;
+      padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer;
     }
 
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
     .kpi-card {
-      background-color: #222222;
-      padding: 25px 20px;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: all 0.4s ease;
+      background-color: #222222; padding: 25px 20px; border-radius: 8px; text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease;
     }
     .kpi-title {
       color: #a0a0a0; font-size: 12px; font-weight: bold;
@@ -67,25 +48,22 @@
     }
     .kpi-value { font-size: 28px; font-weight: bold; }
     
-    .color-gold { color: #d3a32a; }
-    .color-green { color: #4caf50; }
-    .color-orange { color: #ff9800; }
+    .color-gold { color: #d3a32a; } .color-green { color: #4caf50; } .color-orange { color: #ff9800; }
 
-    .charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px; }
+    /* Layout de gráficas: Arriba dona y barras, Abajo Lead Time */
+    .charts-grid-top { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px; }
+    .charts-grid-bottom { display: grid; grid-template-columns: 1fr; margin-bottom: 20px; }
+    
     .chart-card {
       background-color: #222222; padding: 20px; border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative;
-      transition: all 0.4s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative; transition: all 0.4s ease;
     }
 
     .table-section {
       background-color: #222222; padding: 20px; border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease;
     }
-    .filter-bar {
-      display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
-      padding-bottom: 15px; border-bottom: 1px solid #333;
-    }
+    .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
     .filter-bar label { font-weight: bold; color: #eeeeee; font-size: 14px; }
     .filter-bar select { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; width: 300px; }
     
@@ -93,104 +71,74 @@
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
     th { color: #ffffff; font-weight: bold; font-size: 14px; }
     tr:hover { background-color: #2a2a2a; }
-    
     .td-prov { font-weight: bold; color: #ffffff; }
     .td-monto { text-align: right; color: #d3a32a; font-weight: bold; }
 
     #loading { text-align: center; padding: 50px; font-size: 18px; color: #d3a32a; }
 
     /* ==========================================
-       MODO INSTITUCIONAL (GUINDA Y BLANCO)
+       MODAL: FORMULARIO NUEVO REGISTRO
        ========================================== */
-    body.institucional {
-      background-color: #f4f6f8; 
-      color: #333333;
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center;
     }
-    body.institucional .topbar {
-      background-color: #611232; /* Guinda */
-      border-left: 5px solid #b99725; /* Dorado institucional */
-      color: #ffffff;
+    .modal-box {
+      background: #222222; padding: 30px; border-radius: 8px; width: 400px; max-width: 90%;
+      border-top: 5px solid #d3a32a; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow-y: auto; max-height: 90vh;
     }
-    body.institucional .topbar select {
-      background-color: #ffffff; color: #333333; border: 1px solid #ccc;
+    .modal-box h2 { margin-top: 0; margin-bottom: 20px; font-size: 18px; color: #fff; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: #aaa; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555;
+      background: #333; color: #fff; box-sizing: border-box;
     }
-    body.institucional .kpi-card,
-    body.institucional .chart-card,
-    body.institucional .table-section {
-      background-color: #ffffff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-    body.institucional .kpi-title { color: #666666; }
-    
-    /* Cambiamos los dorados por guindas para resaltar en fondo blanco */
-    body.institucional .color-gold { color: #611232; } 
-    
-    body.institucional .filter-bar { border-bottom: 1px solid #ddd; }
-    body.institucional .filter-bar label { color: #333333; }
-    body.institucional .filter-bar select {
-      background-color: #ffffff; color: #333333; border: 1px solid #aaa;
-    }
-    
-    body.institucional th {
-      color: #611232; border-bottom: 2px solid #b99725;
-    }
-    body.institucional td { border-bottom: 1px solid #eeeeee; }
-    body.institucional tr:hover { background-color: #f9f9f9; }
-    
-    body.institucional .td-prov { color: #333333; }
-    body.institucional .td-monto { color: #611232; }
-
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+    .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-cancelar { background: #555; color: #fff; }
+    .btn-guardar { background: #d3a32a; color: #000; }
 
     /* ==========================================
-       MODO RESPONSIVO (TELÉFONOS Y TABLETS)
+       MODO INSTITUCIONAL (GUINDA Y BLANCO)
+       ========================================== */
+    body.institucional { background-color: #f4f6f8; color: #333333; }
+    body.institucional .topbar { background-color: #611232; border-left: 5px solid #b99725; color: #ffffff; }
+    body.institucional .topbar select { background-color: #ffffff; color: #333333; border: 1px solid #ccc; }
+    body.institucional .btn-nuevo { background: #b99725; color: #fff; }
+    body.institucional .kpi-card, body.institucional .chart-card, body.institucional .table-section { background-color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    body.institucional .kpi-title { color: #666666; }
+    body.institucional .color-gold { color: #611232; } 
+    body.institucional .filter-bar { border-bottom: 1px solid #ddd; }
+    body.institucional .filter-bar label { color: #333333; }
+    body.institucional .filter-bar select { background-color: #ffffff; color: #333333; border: 1px solid #aaa; }
+    body.institucional th { color: #611232; border-bottom: 2px solid #b99725; }
+    body.institucional td { border-bottom: 1px solid #eeeeee; }
+    body.institucional tr:hover { background-color: #f9f9f9; }
+    body.institucional .td-prov { color: #333333; }
+    body.institucional .td-monto { color: #611232; }
+    body.institucional .modal-box { background: #ffffff; border-top: 5px solid #611232; }
+    body.institucional .modal-box h2 { color: #611232; }
+    body.institucional .form-group label { color: #555; }
+    body.institucional .form-group input, body.institucional .form-group select { background: #fff; border: 1px solid #ccc; color: #333; }
+    body.institucional .btn-guardar { background: #611232; color: #fff; }
+
+    /* ==========================================
+       MODO RESPONSIVO (MÓVILES)
        ========================================== */
     @media screen and (max-width: 768px) {
-      /* Reacomodar el menú superior */
-      .topbar {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-      }
-      .topbar select {
-        width: 100%;
-      }
-
-      /* Los 4 KPIs pasan de estar en línea a estar en 2 columnas (o 1 en pantallas muy chicas) */
-      .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      /* Las gráficas se apilan una debajo de la otra */
-      .charts-grid {
-        grid-template-columns: 1fr; 
-      }
-      .chart-card {
-        height: 350px; /* Reduce un poco la altura en móviles */
-      }
-
-      /* El filtro de la tabla se adapta al ancho de la pantalla */
-      .filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .filter-bar select {
-        width: 100%;
-      }
-
-      /* Reduce el padding general para aprovechar el espacio en móviles */
-      body {
-        padding: 10px;
-      }
+      .topbar { flex-direction: column; gap: 15px; text-align: center; }
+      .topbar-controls { flex-direction: column; width: 100%; }
+      .topbar select, .btn-nuevo { width: 100%; text-align: center; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid-top { grid-template-columns: 1fr; }
+      .chart-card { height: 350px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar select { width: 100%; }
+      body { padding: 10px; }
     }
-
-    /* Para teléfonos aún más pequeños (pantallas muy estrechas) */
     @media screen and (max-width: 480px) {
-      .kpi-grid {
-        grid-template-columns: 1fr; /* 1 solo KPI por fila */
-      }
-      .kpi-card {
-        padding: 15px;
-      }
+      .kpi-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -199,22 +147,78 @@
   <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-title">
-      <!-- BOTÓN SECRETO: El icono 📊 -->
       <span class="btn-secreto" onclick="toggleTheme()" title="Cambiar Apariencia">📊</span> Dashboard de Servicios Subrogados
     </div>
-    <select id="hospitalSelect" onchange="loadData()">
-      <option value="TODAS" selected>TODAS LAS UNIDADES</option>
-      <option value="HG CANCÚN" >HG CANCÚN</option>
-      <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
-      <option value="HG CHETUMAL">HG CHETUMAL</option>
-      <option value="HG COZUMEL">HG COZUMEL</option>
-      <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
-      <option value="DSS">DSS</option>
-    </select>
+    <div class="topbar-controls">
+      <button class="btn-nuevo" onclick="abrirModal()">+ Nuevo Registro</button>
+      <select id="hospitalSelect" onchange="loadData()">
+        <option value="TODAS">TODAS LAS UNIDADES</option>
+        <option value="HG CANCÚN" selected>HG CANCÚN</option>
+        <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
+        <option value="HG CHETUMAL">HG CHETUMAL</option>
+        <option value="HG COZUMEL">HG COZUMEL</option>
+        <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
+        <option value="DSS">DSS</option>
+      </select>
+    </div>
   </div>
 
   <div id="loading">Cargando datos en tiempo real...</div>
 
+  <!-- Modal Nuevo Registro -->
+  <div class="modal-overlay" id="modalRegistro">
+    <div class="modal-box">
+      <h2>Agregar Nuevo Expediente</h2>
+      <div class="form-group">
+        <label>Unidad Hospitalaria</label>
+        <select id="formUnidad">
+          <option value="HG CANCÚN">HG CANCÚN</option>
+          <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
+          <option value="HG CHETUMAL">HG CHETUMAL</option>
+          <option value="HG COZUMEL">HG COZUMEL</option>
+          <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
+          <option value="DSS">DSS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Servicio</label>
+        <select id="formServicio">
+          <option value="IMAGENOLOGIA">IMAGENOLOGIA</option>
+          <option value="ENDOSCOPIA">ENDOSCOPIA</option>
+          <option value="LABORATORIOS">LABORATORIOS</option>
+          <option value="CIRUGÍA RECONSTRUCTIVA">CIRUGÍA RECONSTRUCTIVA</option>
+          <option value="NEUROPEDIATRÍA">NEUROPEDIATRÍA</option>
+          <option value="MATERIAL DE CURACION">MATERIAL DE CURACIÓN</option>
+          <option value="OTROS">OTROS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Proveedor (Texto libre)</label>
+        <input type="text" id="formProveedor" placeholder="Ej. YAHAPP MEXICO SA DE CV">
+      </div>
+      <div class="form-group">
+        <label>Nombre del Paciente (Texto libre)</label>
+        <input type="text" id="formPaciente" placeholder="Ej. Juan Pérez">
+      </div>
+      <div class="form-group">
+        <label>Monto Total Deuda ($)</label>
+        <input type="number" id="formMonto" step="0.01" placeholder="Ej. 25000.50">
+      </div>
+      <div class="form-group">
+        <label>Estatus Homologado</label>
+        <select id="formEstatus">
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="EN PROCESO / EN REVISIÓN">EN PROCESO / EN REVISIÓN</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn-guardar" id="btnGuardar" onclick="guardarRegistro()">Guardar Registro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenedor del Dashboard -->
   <div id="dashboard-content" style="display: none;">
     <!-- KPIs -->
     <div class="kpi-grid">
@@ -236,8 +240,8 @@
       </div>
     </div>
 
-    <!-- Gráficas -->
-    <div class="charts-grid">
+    <!-- Gráficas Superiores (Dona y Top 10) -->
+    <div class="charts-grid-top">
       <div class="chart-card">
         <canvas id="donutChart"></canvas>
       </div>
@@ -246,9 +250,12 @@
       </div>
     </div>
 
-    <div class="chart-card">
+    <!-- Gráfica Inferior (Lead Time) -->
+    <div class="charts-grid-bottom">
+      <div class="chart-card">
         <canvas id="leadTimeChart"></canvas>
       </div>
+    </div>
 
     <!-- Tabla de Proveedores -->
     <div class="table-section">
@@ -279,31 +286,28 @@
 
   <script>
     // ==========================================
-    // INSERTA TU URL DE APPS SCRIPT AQUÍ
+    // CONFIGURACIÓN PRINCIPAL
     // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbypUEKgPN7dtLT1CApu0tKnC_9gqdQVqDqKTD_53RpytSRBRXKAKS6cQUIqwo278_UneA/exec"; 
-
-    let leadTimeChart = null; // Agrega esta línea
-    
-    const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
     Chart.register(ChartDataLabels);
+    const API_URL = "https://script.google.com/macros/s/AKfycbypUEKgPN7dtLT1CApu0tKnC_9gqdQVqDqKTD_53RpytSRBRXKAKS6cQUIqwo278_UneA/exec"; 
+    const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+    
     let donutChart = null;
     let barChart = null;
+    let leadTimeChart = null;
     let tablaGlobal = [];
-    let currentData = null; // Guardamos los datos para repintar gráficas sin descargar de nuevo
-    
-    // Bandera para saber qué tema está activo
+    let currentData = null; 
     let esInstitucional = false;
 
-    // Función del menú oculto (Cambio de tema)
+    // ==========================================
+    // LOGICA DEL DASHBOARD
+    // ==========================================
     function toggleTheme() {
       esInstitucional = !esInstitucional;
       document.body.classList.toggle('institucional', esInstitucional);
-      
-      // Si ya hay datos cargados, redibujamos las gráficas con los nuevos colores
       if (currentData) {
         renderCharts(currentData);
-        aplicarFiltroProveedor(); // Repinta la tabla para aplicar clases
+        aplicarFiltroProveedor(); 
       }
     }
 
@@ -317,15 +321,13 @@
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          currentData = data; // Respaldamos los datos
-          
+          currentData = data; 
           document.getElementById('kpi-inicial').innerText = formatter.format(data.kpis.deudaInicial);
           document.getElementById('kpi-pagado').innerText = formatter.format(data.kpis.montoPagado);
           document.getElementById('kpi-pendiente').innerText = formatter.format(data.kpis.deudaTotal);
           document.getElementById('kpi-expedientes').innerText = data.kpis.expedientesPendientes;
 
           renderCharts(data);
-
           tablaGlobal = data.table;
           llenarSelectProveedores();
           aplicarFiltroProveedor();
@@ -335,21 +337,18 @@
         })
         .catch(error => {
           console.error("Error al cargar:", error);
-          document.getElementById('loading').innerHTML = "Error al conectar con la base de datos.";
+          document.getElementById('loading').innerHTML = "Error de conexión. Verifica la URL de tu API.";
         });
     }
 
-function renderCharts(data) {
-      // Definimos colores dinámicos según el tema activo
+    function renderCharts(data) {
       const chartTextColor = esInstitucional ? '#333333' : '#cccccc';
       const chartTitleColor = esInstitucional ? '#611232' : '#ffffff';
       const chartGridColor = esInstitucional ? '#e0e0e0' : '#333333';
       const barraColor = esInstitucional ? '#8b1c3f' : '#d3a32a'; 
       const donaPendienteColor = esInstitucional ? '#8b1c3f' : '#d3a32a';
 
-      // ==========================================
-      // 1. PLUGIN Y GRÁFICA DE DONA
-      // ==========================================
+      // 1. Dona (Avance Financiero con centro dinámico)
       const centerTextPlugin = {
         id: 'centerText',
         beforeDraw: function(chart) {
@@ -379,7 +378,7 @@ function renderCharts(data) {
         }
       };
 
-      if(donutChart) donutChart.destroy();
+      if(donutChart instanceof Chart) donutChart.destroy();
       const ctxDonut = document.getElementById('donutChart').getContext('2d');
       donutChart = new Chart(ctxDonut, {
         type: 'doughnut',
@@ -402,10 +401,8 @@ function renderCharts(data) {
         }
       });
 
-      // ==========================================
-      // 2. GRÁFICA DE BARRAS (TOP 10 PROVEEDORES)
-      // ==========================================
-      if(barChart) barChart.destroy();
+      // 2. Barras (Top 10 Proveedores)
+      if(barChart instanceof Chart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
       barChart = new Chart(ctxBar, {
         type: 'bar',
@@ -422,7 +419,7 @@ function renderCharts(data) {
           indexAxis: 'y', responsive: true, maintainAspectRatio: false,
           layout: { padding: { right: 80 } },
           plugins: {
-            title: { display: true, text: 'Top 10 Proveedores', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
+            title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
             legend: { display: false },
             datalabels: {
               anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 },
@@ -436,9 +433,7 @@ function renderCharts(data) {
         }
       });
 
-      // ==========================================
-      // 3. GRÁFICA LEAD TIME (SEMÁFORO)
-      // ==========================================
+      // 3. Lead Time (Semáforo)
       if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
       const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
       leadTimeChart = new Chart(ctxLead, {
@@ -474,141 +469,20 @@ function renderCharts(data) {
           }
         }
       });
-    }}
-
-      // --- Gráfica de Dona ---
-      if(donutChart) donutChart.destroy();
-      const ctxDonut = document.getElementById('donutChart').getContext('2d');
-      donutChart = new Chart(ctxDonut, {
-        type: 'doughnut',
-        // Inyectamos nuestro plugin del texto central (puedes quitar ChartDataLabels de aquí si no quieres los números encima de los colores)
-        plugins: [ChartDataLabels, centerTextPlugin], 
-        data: {
-          labels: ['Pagado', 'Pendiente'],
-          datasets: [{
-            data: [data.kpis.montoPagado, data.kpis.deudaTotal],
-            backgroundColor: ['#4caf50', donaPendienteColor],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%', // Hacemos el agujero un poco más grande para que quepa el texto
-          plugins: {
-            title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { position: 'bottom', labels: { color: chartTextColor } },
-            
-            // Opcional: Apagamos los labels de las rebanadas para que el centro sea el protagonista
-            datalabels: { display: false } 
-          }
-        }
-      });
-
-
-      
-      // --- Gráfica de Barras ---
-      if(barChart) barChart.destroy();
-      const ctxBar = document.getElementById('barChart').getContext('2d');
-      barChart = new Chart(ctxBar, {
-        type: 'bar',
-        plugins: [ChartDataLabels],
-        data: {
-          labels: data.graficaProveedores.labels,
-          datasets: [{
-            data: data.graficaProveedores.values,
-            backgroundColor: barraColor, 
-            borderRadius: 2
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          layout: {
-            padding: { right: 80 }
-          },
-          plugins: {
-            title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { display: false },
-            datalabels: {
-              anchor: 'end',
-              align: 'right',
-              color: chartTextColor,
-              font: { weight: 'bold', size: 11 },
-              formatter: function(value) {
-                return formatter.format(value);
-              }
-            }
-          },
-          scales: {
-            x: { 
-              grid: { color: chartGridColor },
-              ticks: { color: chartTextColor, callback: function(value) { return formatter.format(value); } }
-            },
-            y: { 
-              grid: { display: false },
-              ticks: { color: chartTextColor }
-            }
-          }
-        }
-      });
     }
 
-// --- Gráfica Lead Time (Semáforo) ---
-      // Verificamos si la variable es una instancia de Chart real
-      if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
-      
-      const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
-      leadTimeChart = new Chart(ctxLead, {
-        type: 'bar',
-        plugins: [ChartDataLabels],
-        data: {
-          labels: data.graficaLeadTime.labels,
-          datasets: [{
-            data: data.graficaLeadTime.values,
-            backgroundColor: function(ctx) {
-              const dias = ctx.raw;
-              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; // Crítico
-              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; // Alerta
-              return '#4caf50'; // Óptimo
-            },
-            borderRadius: 2
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true, maintainAspectRatio: false,
-          layout: { padding: { right: 50 } },
-          plugins: {
-            title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { display: false },
-            datalabels: {
-              anchor: 'end', align: 'right', color: chartTextColor,
-              font: { weight: 'bold', size: 11 },
-              formatter: val => val + " Días"
-            }
-          },
-          scales: {
-            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } },
-            y: { grid: { display: false }, ticks: { color: chartTextColor } }
-          }
-        }
-      });
-    
-    // --- Filtro Dinámico ---
+    // ==========================================
+    // FILTROS Y FORMULARIO
+    // ==========================================
     function llenarSelectProveedores() {
       const select = document.getElementById('proveedorSelect');
       select.innerHTML = '<option value="TODOS">TODOS LOS PROVEEDORES</option>';
-      
       let proveedores = tablaGlobal.map(fila => fila[0]);
       let proveedoresUnicos = [...new Set(proveedores)].sort();
-      
       proveedoresUnicos.forEach(prov => {
         if (prov && String(prov).trim() !== "") {
           let opt = document.createElement('option');
-          opt.value = prov;
-          opt.textContent = prov;
+          opt.value = prov; opt.textContent = prov;
           select.appendChild(opt);
         }
       });
@@ -618,7 +492,6 @@ function renderCharts(data) {
       const provSelect = document.getElementById('proveedorSelect').value;
       const tbody = document.getElementById('tablaBody');
       tbody.innerHTML = ''; 
-      
       let tablaFiltrada = provSelect === "TODOS" ? tablaGlobal : tablaGlobal.filter(fila => fila[0] === provSelect);
       
       tablaFiltrada.forEach(row => {
@@ -631,6 +504,58 @@ function renderCharts(data) {
           <td class="td-monto">${formatter.format(row[4])}</td>
         `;
         tbody.appendChild(tr);
+      });
+    }
+
+    function abrirModal() {
+      const unidadActual = document.getElementById('hospitalSelect').value;
+      if (unidadActual !== "TODAS") document.getElementById('formUnidad').value = unidadActual;
+      document.getElementById('formProveedor').value = '';
+      document.getElementById('formPaciente').value = '';
+      document.getElementById('formMonto').value = '';
+      document.getElementById('modalRegistro').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalRegistro').style.display = 'none';
+    }
+
+    function guardarRegistro() {
+      const payload = {
+        action: "add",
+        unidad: document.getElementById('formUnidad').value,
+        servicio: document.getElementById('formServicio').value,
+        proveedor: document.getElementById('formProveedor').value,
+        paciente: document.getElementById('formPaciente').value,
+        monto: document.getElementById('formMonto').value,
+        estatusHomologado: document.getElementById('formEstatus').value
+      };
+
+      if (!payload.proveedor || !payload.paciente || !payload.monto) {
+        alert("Llena los campos de Proveedor, Paciente y Monto."); return;
+      }
+
+      const btn = document.getElementById('btnGuardar');
+      btn.innerText = "Guardando..."; btn.disabled = true;
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(result => {
+        btn.innerText = "Guardar Registro"; btn.disabled = false;
+        if (result.status === "success") {
+          alert("¡Registro guardado exitosamente!");
+          cerrarModal(); loadData();
+        } else {
+          alert("Error: " + result.message);
+        }
+      })
+      .catch(error => {
+        btn.innerText = "Guardar Registro"; btn.disabled = false;
+        alert("Error de red."); console.error(error);
       });
     }
 
