@@ -342,11 +342,52 @@
       const donaPendienteColor = esInstitucional ? '#8b1c3f' : '#d3a32a';
 
       // --- Gráfica de Dona ---
+      // --- Plugin personalizado para poner texto en el centro de la dona ---
+      const centerTextPlugin = {
+        id: 'centerText',
+        beforeDraw: function(chart) {
+          const width = chart.width;
+          const height = chart.height;
+          const ctx = chart.ctx;
+          
+          ctx.restore();
+          
+          // 1. Calcular el porcentaje pendiente
+          const dataArr = chart.config.data.datasets[0].data;
+          const total = dataArr[0] + dataArr[1]; // Pagado + Pendiente
+          let porcentajeText = "0%";
+          if (total > 0) {
+            porcentajeText = ((dataArr[1] / total) * 100).toFixed(1) + "%";
+          }
+
+          // 2. Dibujar el número grande en el centro
+          const fontSize = (height / 120).toFixed(2);
+          ctx.font = "bold " + fontSize + "em Segoe UI, sans-serif";
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = esInstitucional ? '#8b1c3f' : '#d3a32a'; // Cambia de color con el menú oculto
+          
+          const textX = Math.round((width - ctx.measureText(porcentajeText).width) / 2);
+          const textY = height / 2 + 15; // Ajuste vertical
+          ctx.fillText(porcentajeText, textX, textY);
+          
+          // 3. Dibujar la palabra "Pendiente" debajo del número
+          ctx.font = "bold " + (fontSize / 3).toFixed(2) + "em Segoe UI, sans-serif";
+          ctx.fillStyle = esInstitucional ? '#666666' : '#a0a0a0';
+          const label = "PENDIENTE";
+          const labelX = Math.round((width - ctx.measureText(label).width) / 2);
+          ctx.fillText(label, labelX, textY + 25);
+
+          ctx.save();
+        }
+      };
+
       // --- Gráfica de Dona ---
       if(donutChart) donutChart.destroy();
       const ctxDonut = document.getElementById('donutChart').getContext('2d');
       donutChart = new Chart(ctxDonut, {
         type: 'doughnut',
+        // Inyectamos nuestro plugin del texto central (puedes quitar ChartDataLabels de aquí si no quieres los números encima de los colores)
+        plugins: [ChartDataLabels, centerTextPlugin], 
         data: {
           labels: ['Pagado', 'Pendiente'],
           datasets: [{
@@ -358,33 +399,19 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '65%', 
+          cutout: '70%', // Hacemos el agujero un poco más grande para que quepa el texto
           plugins: {
             title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
             legend: { position: 'bottom', labels: { color: chartTextColor } },
             
-            // Forzamos la visualización de las etiquetas
-            datalabels: {
-              display: true,
-              color: '#ffffff', // Letras blancas
-              font: { weight: 'bold', size: 14 },
-              anchor: 'center', // Centrado en la rebanada
-              align: 'center',  // Alineación al centro
-              formatter: function(value, context) {
-                const dataArr = context.chart.data.datasets[0].data;
-                const total = dataArr.reduce((a, b) => a + b, 0);
-                
-                // Si el valor es cero o no hay datos, no dibujamos nada
-                if (total === 0 || value === 0) return '';
-                
-                // Calcula y devuelve el porcentaje
-                let porcentaje = ((value / total) * 100).toFixed(1) + '%';
-                return porcentaje;
-              }
-            }
+            // Opcional: Apagamos los labels de las rebanadas para que el centro sea el protagonista
+            datalabels: { display: false } 
           }
         }
       });
+
+
+      
       // --- Gráfica de Barras ---
       if(barChart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
