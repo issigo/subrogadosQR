@@ -465,10 +465,13 @@
         }
       });
     }
+
 // --- Gráfica Lead Time (Semáforo) ---
-if(window.leadTimeChart) window.leadTimeChart.destroy();
+      // Verificamos si la variable es una instancia de Chart real
+      if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
+      
       const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
-      window.leadTimeChart = new Chart(ctxLead, {
+      leadTimeChart = new Chart(ctxLead, {
         type: 'bar',
         plugins: [ChartDataLabels],
         data: {
