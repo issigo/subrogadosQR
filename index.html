@@ -283,6 +283,8 @@
     // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycbypUEKgPN7dtLT1CApu0tKnC_9gqdQVqDqKTD_53RpytSRBRXKAKS6cQUIqwo278_UneA/exec"; 
 
+    let leadTimeChart = null; // Agrega esta línea
+    
     const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
     Chart.register(ChartDataLabels);
     let donutChart = null;
