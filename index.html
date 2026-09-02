@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard de Servicios Subrogados</title>
   
-  <!-- Chart.js y DataLabels -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   
@@ -13,56 +14,27 @@
     /* ==========================================
        MODO OSCURO (POR DEFECTO)
        ========================================== */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1a1a1a; 
-      color: #ffffff; margin: 0; padding: 20px; transition: background-color 0.4s ease;
-    }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #ffffff; margin: 0; padding: 20px; transition: background-color 0.4s ease; }
     
-    .topbar {
-      display: flex; justify-content: space-between; align-items: center;
-      background-color: #222222; padding: 15px 25px; border-radius: 8px;
-      margin-bottom: 20px; border-left: 5px solid #d3a32a; transition: all 0.4s ease;
-    }
+    .topbar { display: flex; justify-content: space-between; align-items: center; background-color: #222222; padding: 15px 25px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #d3a32a; transition: all 0.4s ease; }
     .topbar-title { font-size: 18px; font-weight: bold; }
     .btn-secreto { cursor: pointer; user-select: none; }
     
     .topbar-controls { display: flex; align-items: center; gap: 15px; }
-    .btn-nuevo { 
-      background: #d3a32a; color: #000; padding: 8px 15px; border-radius: 4px; 
-      font-weight: bold; cursor: pointer; border: none; 
-    }
-    .topbar select {
-      background-color: #333333; color: #ffffff; border: 1px solid #555;
-      padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer;
-    }
+    .btn-nuevo { background: #d3a32a; color: #000; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; }
+    .topbar select { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; }
 
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
-    .kpi-card {
-      background-color: #222222; padding: 25px 20px; border-radius: 8px; text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease;
-    }
-    .kpi-title {
-      color: #a0a0a0; font-size: 12px; font-weight: bold;
-      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;
-    }
+    .kpi-card { background-color: #222222; padding: 25px 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease; }
+    .kpi-title { color: #a0a0a0; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
     .kpi-value { font-size: 28px; font-weight: bold; }
-    
     .color-gold { color: #d3a32a; } .color-green { color: #4caf50; } .color-orange { color: #ff9800; }
 
-    /* Layout de gráficas: Arriba dona y barras, Abajo Lead Time */
     .charts-grid-top { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px; }
     .charts-grid-bottom { display: grid; grid-template-columns: 1fr; margin-bottom: 20px; }
-    
-    .chart-card {
-      background-color: #222222; padding: 20px; border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative; transition: all 0.4s ease;
-    }
+    .chart-card { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative; transition: all 0.4s ease; }
 
-    .table-section {
-      background-color: #222222; padding: 20px; border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease;
-    }
+    .table-section { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease; }
     .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
     .filter-bar label { font-weight: bold; color: #eeeeee; font-size: 14px; }
     .filter-bar select { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; width: 300px; }
@@ -73,34 +45,24 @@
     tr:hover { background-color: #2a2a2a; }
     .td-prov { font-weight: bold; color: #ffffff; }
     .td-monto { text-align: right; color: #d3a32a; font-weight: bold; }
-
     #loading { text-align: center; padding: 50px; font-size: 18px; color: #d3a32a; }
 
     /* ==========================================
-       MODAL: FORMULARIO NUEVO REGISTRO
+       MODALES (FORMULARIOS)
        ========================================== */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center;
-    }
-    .modal-box {
-      background: #222222; padding: 30px; border-radius: 8px; width: 400px; max-width: 90%;
-      border-top: 5px solid #d3a32a; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow-y: auto; max-height: 90vh;
-    }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-box { background: #222222; padding: 30px; border-radius: 8px; width: 400px; max-width: 90%; border-top: 5px solid #d3a32a; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow-y: auto; max-height: 90vh; }
     .modal-box h2 { margin-top: 0; margin-bottom: 20px; font-size: 18px; color: #fff; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; font-size: 13px; color: #aaa; }
-    .form-group input, .form-group select {
-      width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555;
-      background: #333; color: #fff; box-sizing: border-box;
-    }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff; box-sizing: border-box; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
     .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .btn-cancelar { background: #555; color: #fff; }
     .btn-guardar { background: #d3a32a; color: #000; }
 
     /* ==========================================
-       MODO INSTITUCIONAL (GUINDA Y BLANCO)
+       MODO INSTITUCIONAL
        ========================================== */
     body.institucional { background-color: #f4f6f8; color: #333333; }
     body.institucional .topbar { background-color: #611232; border-left: 5px solid #b99725; color: #ffffff; }
@@ -137,9 +99,7 @@
       .filter-bar select { width: 100%; }
       body { padding: 10px; }
     }
-    @media screen and (max-width: 480px) {
-      .kpi-grid { grid-template-columns: 1fr; }
-    }
+    @media screen and (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -152,8 +112,8 @@
     <div class="topbar-controls">
       <button class="btn-nuevo" onclick="abrirModal()">+ Nuevo Registro</button>
       <select id="hospitalSelect" onchange="loadData()">
-        <option value="TODAS" selected>TODAS LAS UNIDADES</option>
-        <option value="HG CANCÚN" >HG CANCÚN</option>
+        <option value="TODAS">TODAS LAS UNIDADES</option>
+        <option value="HG CANCÚN" selected>HG CANCÚN</option>
         <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
         <option value="HG CHETUMAL">HG CHETUMAL</option>
         <option value="HG COZUMEL">HG COZUMEL</option>
@@ -165,7 +125,7 @@
 
   <div id="loading">Cargando datos en tiempo real...</div>
 
-  <!-- Modal Nuevo Registro -->
+  <!-- Modal 1: Nuevo Registro -->
   <div class="modal-overlay" id="modalRegistro">
     <div class="modal-box">
       <h2>Agregar Nuevo Expediente</h2>
@@ -218,13 +178,11 @@
     </div>
   </div>
 
-<!-- Modal Actualizar / Pagar Registro -->
+  <!-- Modal 2: Actualizar / Pagar Registro -->
   <div class="modal-overlay" id="modalEdicion">
     <div class="modal-box">
       <h2>Actualizar Pago y Estatus</h2>
       <p id="editInfo" style="color:#aaa; font-size:12px; margin-bottom:15px;"></p>
-      
-      <!-- Campo oculto para guardar el ID -->
       <input type="hidden" id="editId">
 
       <div class="form-group">
@@ -235,56 +193,37 @@
           <option value="EN PROCESO / EN REVISIÓN">EN PROCESO / EN REVISIÓN</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Fecha de Radicación (Pago)</label>
         <input type="date" id="editFechaPago">
       </div>
-
       <div class="modal-actions">
         <button class="btn btn-cancelar" onclick="cerrarModalEdicion()">Cancelar</button>
         <button class="btn btn-guardar" id="btnGuardarEdicion" onclick="guardarEdicion()">Actualizar</button>
       </div>
     </div>
   </div>
-  
+
   <!-- Contenedor del Dashboard -->
   <div id="dashboard-content" style="display: none;">
+    
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-title">Deuda Inicial Original</div>
-        <div class="kpi-value color-gold" id="kpi-inicial">$0.00</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Monto Total Pagado</div>
-        <div class="kpi-value color-green" id="kpi-pagado">$0.00</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Deuda Pendiente Activa</div>
-        <div class="kpi-value color-gold" id="kpi-pendiente">$0.00</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Expedientes Pendientes</div>
-        <div class="kpi-value color-orange" id="kpi-expedientes">0</div>
-      </div>
+      <div class="kpi-card"><div class="kpi-title">Deuda Inicial Original</div><div class="kpi-value color-gold" id="kpi-inicial">$0.00</div></div>
+      <div class="kpi-card"><div class="kpi-title">Monto Total Pagado</div><div class="kpi-value color-green" id="kpi-pagado">$0.00</div></div>
+      <div class="kpi-card"><div class="kpi-title">Deuda Pendiente Activa</div><div class="kpi-value color-gold" id="kpi-pendiente">$0.00</div></div>
+      <div class="kpi-card"><div class="kpi-title">Expedientes Pendientes</div><div class="kpi-value color-orange" id="kpi-expedientes">0</div></div>
     </div>
 
     <!-- Gráficas Superiores (Dona y Top 10) -->
     <div class="charts-grid-top">
-      <div class="chart-card">
-        <canvas id="donutChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <canvas id="barChart"></canvas>
-      </div>
+      <div class="chart-card"><canvas id="donutChart"></canvas></div>
+      <div class="chart-card"><canvas id="barChart"></canvas></div>
     </div>
 
     <!-- Gráfica Inferior (Lead Time) -->
     <div class="charts-grid-bottom">
-      <div class="chart-card">
-        <canvas id="leadTimeChart"></canvas>
-      </div>
+      <div class="chart-card"><canvas id="leadTimeChart"></canvas></div>
     </div>
 
     <!-- Tabla de Proveedores -->
@@ -304,7 +243,7 @@
               <th>Tipo</th>
               <th>Paciente</th>
               <th style="text-align: right;">Monto Total</th>
-              <th style="text-align: center;">Acciones</th> <!-- NUEVO -->
+              <th style="text-align: center;">Acciones</th>
             </tr>
           </thead>
           <tbody id="tablaBody">
@@ -416,18 +355,13 @@
         plugins: [ChartDataLabels, centerTextPlugin], 
         data: {
           labels: ['Pagado', 'Pendiente'],
-          datasets: [{
-            data: [data.kpis.montoPagado, data.kpis.deudaTotal],
-            backgroundColor: ['#4caf50', donaPendienteColor],
-            borderWidth: 0
-          }]
+          datasets: [{ data: [data.kpis.montoPagado, data.kpis.deudaTotal], backgroundColor: ['#4caf50', donaPendienteColor], borderWidth: 0 }]
         },
         options: {
           responsive: true, maintainAspectRatio: false, cutout: '70%', 
           plugins: {
             title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { position: 'bottom', labels: { color: chartTextColor } },
-            datalabels: { display: false } 
+            legend: { position: 'bottom', labels: { color: chartTextColor } }, datalabels: { display: false } 
           }
         }
       });
@@ -436,26 +370,14 @@
       if(barChart instanceof Chart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
       barChart = new Chart(ctxBar, {
-        type: 'bar',
-        plugins: [ChartDataLabels],
-        data: {
-          labels: data.graficaProveedores.labels,
-          datasets: [{
-            data: data.graficaProveedores.values,
-            backgroundColor: barraColor, 
-            borderRadius: 2
-          }]
-        },
+        type: 'bar', plugins: [ChartDataLabels],
+        data: { labels: data.graficaProveedores.labels, datasets: [{ data: data.graficaProveedores.values, backgroundColor: barraColor, borderRadius: 2 }] },
         options: {
-          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-          layout: { padding: { right: 80 } },
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 80 } },
           plugins: {
             title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
             legend: { display: false },
-            datalabels: {
-              anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 },
-              formatter: function(value) { return formatter.format(value); }
-            }
+            datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: function(value) { return formatter.format(value); } }
           },
           scales: {
             x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: function(val) { return formatter.format(val); } } },
@@ -468,31 +390,25 @@
       if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
       const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
       leadTimeChart = new Chart(ctxLead, {
-        type: 'bar',
-        plugins: [ChartDataLabels],
+        type: 'bar', plugins: [ChartDataLabels],
         data: {
           labels: data.graficaLeadTime.labels,
           datasets: [{
             data: data.graficaLeadTime.values,
             backgroundColor: function(ctx) {
               const dias = ctx.raw;
-              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; // Crítico
-              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; // Alerta
-              return '#4caf50'; // Óptimo
-            },
-            borderRadius: 2
+              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f';
+              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a';
+              return '#4caf50';
+            }, borderRadius: 2
           }]
         },
         options: {
-          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-          layout: { padding: { right: 50 } },
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } },
           plugins: {
             title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
             legend: { display: false },
-            datalabels: {
-              anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 },
-              formatter: val => val + " Días"
-            }
+            datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: val => val + " Días" }
           },
           scales: {
             x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } },
@@ -503,7 +419,7 @@
     }
 
     // ==========================================
-    // FILTROS Y FORMULARIO
+    // FILTROS Y TABLA
     // ==========================================
     function llenarSelectProveedores() {
       const select = document.getElementById('proveedorSelect');
@@ -513,8 +429,7 @@
       proveedoresUnicos.forEach(prov => {
         if (prov && String(prov).trim() !== "") {
           let opt = document.createElement('option');
-          opt.value = prov; opt.textContent = prov;
-          select.appendChild(opt);
+          opt.value = prov; opt.textContent = prov; select.appendChild(opt);
         }
       });
     }
@@ -527,17 +442,7 @@
       
       tablaFiltrada.forEach(row => {
         let tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="td-prov">${row[0]}</td>
-          <td>${row[1]}</td>
-          <td>${row[2]}</td>
-          <td>${row[3]}</td>
-          <td class="td-monto">${formatter.format(row[4])}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-      tablaFiltrada.forEach(row => {
-        let tr = document.createElement('tr');
+        // row[0]=Proveedor, row[1]=Servicio, row[2]=Tipo, row[3]=Paciente, row[4]=Monto, row[5]=ID
         tr.innerHTML = `
           <td class="td-prov">${row[0]}</td>
           <td>${row[1]}</td>
@@ -545,8 +450,8 @@
           <td>${row[3]}</td>
           <td class="td-monto">${formatter.format(row[4])}</td>
           <td style="text-align: center;">
-            <button onclick="abrirModalEdicion(${row[5]}, '${row[0]}', '${row[3]}')" 
-                    style="background:#b99725; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">
+            <button onclick="abrirModalEdicion(${row[5]}, '${row[0].replace(/'/g, "\\'")}', '${row[3].replace(/'/g, "\\'")}')" 
+                    style="background:${esInstitucional ? '#611232' : '#b99725'}; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">
               ✏️ Pagar
             </button>
           </td>
@@ -555,6 +460,9 @@
       });
     }
 
+    // ==========================================
+    // FUNCIONES DE MODALES (CREAR Y EDITAR)
+    // ==========================================
     function abrirModal() {
       const unidadActual = document.getElementById('hospitalSelect').value;
       if (unidadActual !== "TODAS") document.getElementById('formUnidad').value = unidadActual;
@@ -564,67 +472,8 @@
       document.getElementById('modalRegistro').style.display = 'flex';
     }
 
-    function cerrarModal() {
-      document.getElementById('modalRegistro').style.display = 'none';
-    }
+    function cerrarModal() { document.getElementById('modalRegistro').style.display = 'none'; }
 
-// ==========================================
-    // FUNCIONES DE EDICIÓN
-    // ==========================================
-    function abrirModalEdicion(id, proveedor, paciente) {
-      document.getElementById('editId').value = id;
-      // Mostramos un resumen para que sepas qué estás editando
-      document.getElementById('editInfo').innerText = `Expediente #${id} - ${proveedor} (${paciente})`;
-      
-      // Ponemos la fecha de hoy por defecto para ahorrar clics
-      const hoy = new Date().toISOString().split('T')[0];
-      document.getElementById('editFechaPago').value = hoy;
-      
-      document.getElementById('modalEdicion').style.display = 'flex';
-    }
-
-    function cerrarModalEdicion() {
-      document.getElementById('modalEdicion').style.display = 'none';
-    }
-
-    function guardarEdicion() {
-      const payload = {
-        action: "edit",
-        id: document.getElementById('editId').value,
-        estatusHomologado: document.getElementById('editEstatus').value,
-        fechaPago: document.getElementById('editFechaPago').value
-      };
-
-      if (!payload.fechaPago) {
-        alert("Por favor selecciona una fecha de pago."); return;
-      }
-
-      const btn = document.getElementById('btnGuardarEdicion');
-      btn.innerText = "Actualizando..."; btn.disabled = true;
-
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(result => {
-        btn.innerText = "Actualizar"; btn.disabled = false;
-        if (result.status === "success") {
-          cerrarModalEdicion(); 
-          // Al recargar los datos, este expediente desaparecerá de la tabla 
-          // (porque ya no será "PENDIENTE") y se sumará a los KPIs en verde.
-          loadData(); 
-        } else {
-          alert("Error: " + result.message);
-        }
-      })
-      .catch(error => {
-        btn.innerText = "Actualizar"; btn.disabled = false;
-        alert("Error de red."); 
-      });
-    }
-    
     function guardarRegistro() {
       const payload = {
         action: "add",
@@ -639,29 +488,47 @@
       if (!payload.proveedor || !payload.paciente || !payload.monto) {
         alert("Llena los campos de Proveedor, Paciente y Monto."); return;
       }
-
       const btn = document.getElementById('btnGuardar');
       btn.innerText = "Guardando..."; btn.disabled = true;
 
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-        body: JSON.stringify(payload)
-      })
+      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
       .then(response => response.json())
       .then(result => {
         btn.innerText = "Guardar Registro"; btn.disabled = false;
-        if (result.status === "success") {
-          alert("¡Registro guardado exitosamente!");
-          cerrarModal(); loadData();
-        } else {
-          alert("Error: " + result.message);
-        }
-      })
-      .catch(error => {
-        btn.innerText = "Guardar Registro"; btn.disabled = false;
-        alert("Error de red."); console.error(error);
-      });
+        if (result.status === "success") { alert("¡Registro guardado!"); cerrarModal(); loadData(); } 
+        else { alert("Error: " + result.message); }
+      }).catch(error => { btn.innerText = "Guardar Registro"; btn.disabled = false; alert("Error de red."); });
+    }
+
+    function abrirModalEdicion(id, proveedor, paciente) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editInfo').innerText = `Expediente #${id} - ${proveedor} (${paciente})`;
+      document.getElementById('editFechaPago').value = new Date().toISOString().split('T')[0];
+      document.getElementById('modalEdicion').style.display = 'flex';
+    }
+
+    function cerrarModalEdicion() { document.getElementById('modalEdicion').style.display = 'none'; }
+
+    function guardarEdicion() {
+      const payload = {
+        action: "edit",
+        id: document.getElementById('editId').value,
+        estatusHomologado: document.getElementById('editEstatus').value,
+        fechaPago: document.getElementById('editFechaPago').value
+      };
+
+      if (!payload.fechaPago) { alert("Por favor selecciona una fecha de pago."); return; }
+
+      const btn = document.getElementById('btnGuardarEdicion');
+      btn.innerText = "Actualizando..."; btn.disabled = true;
+
+      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .then(response => response.json())
+      .then(result => {
+        btn.innerText = "Actualizar"; btn.disabled = false;
+        if (result.status === "success") { cerrarModalEdicion(); loadData(); } 
+        else { alert("Error: " + result.message); }
+      }).catch(error => { btn.innerText = "Actualizar"; btn.disabled = false; alert("Error de red."); });
     }
 
     window.onload = loadData;
