@@ -284,7 +284,7 @@
       document.body.classList.toggle('institucional', esInstitucional);
       if (currentData) {
         renderCharts(currentData);
-        aplicarFiltroProveedor(); 
+        aplicarFiltros(); 
       }
     }
 
@@ -307,7 +307,7 @@
           renderCharts(data);
           tablaGlobal = data.table;
           llenarSelectProveedores();
-          aplicarFiltroProveedor();
+          aplicarFiltros();
 
           document.getElementById('loading').style.display = 'none';
           document.getElementById('dashboard-content').style.display = 'block';
