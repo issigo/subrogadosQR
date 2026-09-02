@@ -139,6 +139,59 @@
     
     body.institucional .td-prov { color: #333333; }
     body.institucional .td-monto { color: #611232; }
+
+
+    /* ==========================================
+       MODO RESPONSIVO (TELÉFONOS Y TABLETS)
+       ========================================== */
+    @media screen and (max-width: 768px) {
+      /* Reacomodar el menú superior */
+      .topbar {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+      .topbar select {
+        width: 100%;
+      }
+
+      /* Los 4 KPIs pasan de estar en línea a estar en 2 columnas (o 1 en pantallas muy chicas) */
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      /* Las gráficas se apilan una debajo de la otra */
+      .charts-grid {
+        grid-template-columns: 1fr; 
+      }
+      .chart-card {
+        height: 350px; /* Reduce un poco la altura en móviles */
+      }
+
+      /* El filtro de la tabla se adapta al ancho de la pantalla */
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-bar select {
+        width: 100%;
+      }
+
+      /* Reduce el padding general para aprovechar el espacio en móviles */
+      body {
+        padding: 10px;
+      }
+    }
+
+    /* Para teléfonos aún más pequeños (pantallas muy estrechas) */
+    @media screen and (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr; /* 1 solo KPI por fila */
+      }
+      .kpi-card {
+        padding: 15px;
+      }
+    }
   </style>
 </head>
 <body>
