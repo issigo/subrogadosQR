@@ -228,11 +228,16 @@
 
     <!-- Tabla de Proveedores -->
     <div class="table-section">
-      <div class="filter-bar">
-        <label for="proveedorSelect">🔍 Filtrar expedientes por Proveedor:</label>
-        <select id="proveedorSelect" onchange="aplicarFiltroProveedor()">
+     <div class="filter-bar">
+        <label for="proveedorSelect">🔍 Filtros:</label>
+        
+        <select id="proveedorSelect" onchange="aplicarFiltros()">
           <option value="TODOS">TODOS LOS PROVEEDORES</option>
         </select>
+
+        <!-- Nuevo buscador dinámico por paciente -->
+        <input type="text" id="pacienteInput" oninput="aplicarFiltros()" placeholder="Buscar paciente..." 
+               style="padding: 8px 15px; border-radius: 4px; border: 1px solid #555; background-color: #333333; color: #ffffff; width: 250px;">
       </div>
       <div style="overflow-x: auto;">
         <table>
