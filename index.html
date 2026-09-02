@@ -280,7 +280,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbypUEKgPN7dtLT1CApu0tKnC_9gqdQVqDqKTD_53RpytSRBRXKAKS6cQUIqwo278_UneA/exec"; 
 
     const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-    
+    Chart.register(ChartDataLabels);
     let donutChart = null;
     let barChart = null;
     let tablaGlobal = [];
@@ -342,6 +342,7 @@
       const donaPendienteColor = esInstitucional ? '#8b1c3f' : '#d3a32a';
 
       // --- Gráfica de Dona ---
+      // --- Gráfica de Dona ---
       if(donutChart) donutChart.destroy();
       const ctxDonut = document.getElementById('donutChart').getContext('2d');
       donutChart = new Chart(ctxDonut, {
@@ -361,11 +362,29 @@
           plugins: {
             title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
             legend: { position: 'bottom', labels: { color: chartTextColor } },
-            datalabels: { display: false } 
+            
+            // Forzamos la visualización de las etiquetas
+            datalabels: {
+              display: true,
+              color: '#ffffff', // Letras blancas
+              font: { weight: 'bold', size: 14 },
+              anchor: 'center', // Centrado en la rebanada
+              align: 'center',  // Alineación al centro
+              formatter: function(value, context) {
+                const dataArr = context.chart.data.datasets[0].data;
+                const total = dataArr.reduce((a, b) => a + b, 0);
+                
+                // Si el valor es cero o no hay datos, no dibujamos nada
+                if (total === 0 || value === 0) return '';
+                
+                // Calcula y devuelve el porcentaje
+                let porcentaje = ((value / total) * 100).toFixed(1) + '%';
+                return porcentaje;
+              }
+            }
           }
         }
       });
-
       // --- Gráfica de Barras ---
       if(barChart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
