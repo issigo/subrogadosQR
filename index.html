@@ -4,261 +4,413 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Servicios Subrogados</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+  
+  <!-- Librerías de Chart.js y DataLabels -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  
   <style>
-    :root {
-      --guinda: #8b1c3f;
-      --oro: #b99725;
-      --bg-light: #f4f7f6;
-      --text-dark: #333;
+    /* Diseño general inspirado en dashboards modernos */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212; /* Fondo oscuro */
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
     }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-light); margin: 0; padding: 20px; color: var(--text-dark); }
-    
-    .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 25px; max-width: 1600px; margin: 0 auto; }
-
-    /* Panel Lateral */
-    .sidebar-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 12px rgba(0,0,0,0.1); text-align: center; display: flex; flex-direction: column;}
-    .sidebar-top { padding: 30px 20px; }
-    .sidebar-bottom { background: var(--guinda); color: white; padding: 30px 20px; flex-grow: 1;}
-    .oro-badge { background: var(--oro); color: white; padding: 10px; font-weight: 900; font-size: 26px; border-radius: 6px; margin: 10px 0 25px;}
-    .chart-wrapper { width: 160px; height: 160px; margin: 0 auto 25px; position: relative; }
-    
-    /* Contenido Principal */
-    .main-content { display: flex; flex-direction: column; gap: 20px; }
-    
-    .header-title { display: flex; align-items: center; gap: 15px; font-size: 24px; font-weight: 900; background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .header-select { background: var(--oro); color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; font-size: 16px; cursor: pointer; outline: none; }
-
-    /* Tabla */
-    .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-height: 350px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: var(--guinda); color: white; padding: 12px; text-align: left; position: sticky; top: 0; z-index: 10; }
-    td { padding: 10px 12px; border-bottom: 1px solid #eee; }
-    tr:hover { background-color: #f9f9f9; }
-
-    /* KPIs Inferiores */
-    .kpi-bottom-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
-    .kpi-box { padding: 15px; border-radius: 8px; color: white; font-weight: bold; font-size: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .kpi-box.guinda { background: var(--guinda); }
-    .kpi-box.oro { background: var(--oro); }
-    .kpi-label { color: var(--text-dark); font-size: 13px; font-weight: bold; margin-bottom: 8px; }
-
-    /* Gráfico Top 10 */
-    .chart-container-bottom { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); height: 350px; margin-top: 10px; }
-
-    /* Overlay de carga */
-    #loading { display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); z-index: 1000; justify-content: center; align-items: center; font-size: 28px; font-weight: bold; color: var(--guinda); flex-direction: column; gap: 15px;}
-    .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--guinda); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e1e1e;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      margin-bottom: 25px;
+      border-left: 5px solid #b99725;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #fff;
+    }
+    .header select {
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #2c2c2c;
+      color: #fff;
+      border: 1px solid #444;
+      cursor: pointer;
+    }
+    .kpi-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .kpi-card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .kpi-title {
+      font-size: 14px;
+      color: #aaa;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .kpi-value {
+      font-size: 26px;
+      font-weight: bold;
+      color: #b99725; /* Dorado principal */
+    }
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .chart-card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      position: relative;
+      height: 400px;
+    }
+    .table-section {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .filter-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #333;
+    }
+    .filter-container label {
+      font-weight: bold;
+      color: #ccc;
+    }
+    .filter-container select {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background-color: #2c2c2c;
+      color: #fff;
+      flex-grow: 1;
+      max-width: 400px;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+    th {
+      background-color: #2c2c2c;
+      color: #fff;
+      font-weight: bold;
+    }
+    tr:hover {
+      background-color: #2a2a2a;
+    }
+    #loading {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #b99725;
+      padding: 50px;
+    }
   </style>
 </head>
 <body>
 
-  <div id="loading">
-    <div class="spinner"></div>
-    <div>Sincronizando con Google Sheets...</div>
+  <!-- Encabezado con el selector global -->
+  <div class="header">
+    <h1>📊 Dashboard de Servicios Subrogados</h1>
+    <select id="hospitalSelect" onchange="loadData()">
+      <option value="TODAS">TODAS LAS UNIDADES (GLOBAL)</option>
+      <option value="HG CANCÚN" selected>HG CANCÚN</option>
+      <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
+      <option value="HG CHETUMAL">HG CHETUMAL</option>
+      <option value="HG COZUMEL">HG COZUMEL</option>
+      <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
+      <option value="DSS">DSS</option>
+    </select>
   </div>
 
-  <div class="dashboard-grid">
-    <!-- PANEL LATERAL -->
-    <div class="sidebar-card">
-      <div class="sidebar-top">
-        <h2 style="color: var(--guinda); margin: 0 0 15px; font-weight: 900; font-size: 28px;" id="txt-unidad-lateral">HG CANCÚN</h2>
-        <p style="color: #666; font-size: 16px; margin: 0 0 5px; font-weight: bold;">Monto total pagado</p>
-        <h2 style="margin: 0; font-size: 32px;" id="txt-pagado">$0.00</h2>
+  <!-- Pantalla de carga -->
+  <div id="loading">Sincronizando datos con Google Sheets...</div>
+
+  <!-- Contenedor principal del Dashboard -->
+  <div id="dashboard-content" style="display: none;">
+    
+    <!-- Tarjetas de KPIs -->
+    <div class="kpi-container">
+      <div class="kpi-card">
+        <div class="kpi-title">Deuda Inicial Original</div>
+        <div class="kpi-value" id="kpi-inicial">$0.00</div>
       </div>
-      <div class="sidebar-bottom">
-        <div style="font-size: 15px; font-weight: bold; letter-spacing: 1px;">DEUDA TOTAL</div>
-        <div class="oro-badge" id="txt-deuda">$0.00</div>
-        <div class="chart-wrapper">
-          <canvas id="donutChart"></canvas>
-        </div>
-        <div style="background: white; color: var(--guinda); padding: 15px; border-radius: 8px; font-weight: 900; font-size: 16px; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
-          <span id="txt-exp-pendientes" style="font-size: 28px;">0</span> EXPEDIENTES PENDIENTES
-        </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Monto Total Pagado</div>
+        <div class="kpi-value" id="kpi-pagado" style="color: #4caf50;">$0.00</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Deuda Pendiente Activa</div>
+        <div class="kpi-value" id="kpi-pendiente">$0.00</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Expedientes Pendientes</div>
+        <div class="kpi-value" id="kpi-expedientes" style="color: #ff9800;">0</div>
       </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content">
-      <div class="header-title">
-        <select class="header-select" id="hospitalSelect" onchange="loadData()">
-<option value="TODAS">TODAS LAS UNIDADES (GLOBAL)</option>
-          <option value="HG CANCÚN">HG CANCÚN</option>
-          <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
-          <option value="HG CHETUMAL">HG CHETUMAL</option>
-          <option value="HG COZUMEL">HG COZUMEL</option>
-          <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
-          <option value="DSS">DSS</option>
-        </select>
-        SERVICIOS SUBROGADOS QUINTANA ROO
+    <!-- Gráficas -->
+    <div class="charts-container">
+      <div class="chart-card">
+        <canvas id="donutChart"></canvas>
       </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>PROVEEDOR</th>
-              <th>SERVICIO SUBROGADO</th>
-              <th>TIPO SOLICITUD</th>
-              <th>PACIENTE</th>
-              <th>MONTO TOTAL ($)</th>
-            </tr>
-          </thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-
-      <div class="kpi-bottom-grid">
-        <div><div class="kpi-label">Total deuda inicial</div><div class="kpi-box guinda" id="kpi-inicial">$0.00</div></div>
-        <div><div class="kpi-label">Total pagado</div><div class="kpi-box guinda" id="kpi-pagado-inf">$0.00</div></div>
-        <div><div class="kpi-label">Total expedientes</div><div class="kpi-box oro" id="kpi-exp-total">0</div></div>
-        <div><div class="kpi-label">Expedientes pagados</div><div class="kpi-box oro" id="kpi-exp-pagados">0</div></div>
-      </div>
-
-      <div class="chart-container-bottom">
+      <div class="chart-card">
         <canvas id="barChart"></canvas>
       </div>
     </div>
+
+    <!-- Sección de la Tabla de Datos con Filtro de Proveedor -->
+    <div class="table-section">
+      <div class="filter-container">
+        <label for="proveedorSelect">🔍 Filtrar expedientes por Proveedor:</label>
+        <select id="proveedorSelect" onchange="aplicarFiltroProveedor()">
+          <option value="TODOS">TODOS LOS PROVEEDORES</option>
+        </select>
+      </div>
+      
+      <div class="table-wrapper">
+        <table id="tabla-servicios">
+          <thead>
+            <tr>
+              <th>Proveedor</th>
+              <th>Servicio</th>
+              <th>Tipo</th>
+              <th>Paciente</th>
+              <th style="text-align: right;">Monto Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Los datos se inyectarán aquí vía JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <script>
     // ==========================================
-    // ¡IMPORTANTE! REEMPLAZA ESTA URL CON LA TUYA
+    // CONFIGURACIÓN PRINCIPAL
     // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbypUEKgPN7dtLT1CApu0tKnC_9gqdQVqDqKTD_53RpytSRBRXKAKS6cQUIqwo278_UneA/exec";
+    // ¡OJO! Reemplaza este enlace con el URL de tu API de Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbyC9T_M_T8E9jB8F5yG-k3Y6bN/exec"; 
 
+    // Variables globales
+    let donutChart = null;
+    let barChart = null;
+    let tablaGlobal = []; // Almacena la tabla completa de la unidad seleccionada
+
+    // Formateador de moneda MXN
+    const formatter = new Intl.NumberFormat('es-MX', { 
+      style: 'currency', 
+      currency: 'MXN' 
+    });
     
+    // Configuración global para Chart.js en modo oscuro
+    Chart.defaults.color = '#ccc';
+    Chart.defaults.borderColor = '#333';
 
-    const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-    let donutChart, barChart;
-
-    window.onload = loadData;
-
+    // ==========================================
+    // FUNCIÓN DE CARGA DE DATOS (Con Cache-Busting)
+    // ==========================================
     function loadData() {
-      document.getElementById('loading').style.display = 'flex';
       const unidad = document.getElementById('hospitalSelect').value;
-      document.getElementById('txt-unidad-lateral').innerText = unidad;
       
-      fetch(`${API_URL}?unidad=${encodeURIComponent(unidad)}`)
-        .then(response => {
-          if (!response.ok) throw new Error('Error en la red');
-          return response.json();
-        })
-        .then(data => renderData(data))
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          alert('Hubo un problema al conectar con la base de datos de Google Sheets. Verifica la URL de tu API.');
+      // Cache-Busting: Añadimos un timestamp para forzar a leer el Excel actualizado
+      const url = API_URL + "?unidad=" + encodeURIComponent(unidad) + "&t=" + new Date().getTime();
+      
+      // Mostrar estado de carga
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('dashboard-content').style.display = 'none';
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // 1. Llenar KPIs
+          document.getElementById('kpi-inicial').innerText = formatter.format(data.kpis.deudaInicial);
+          document.getElementById('kpi-pagado').innerText = formatter.format(data.kpis.montoPagado);
+          document.getElementById('kpi-pendiente').innerText = formatter.format(data.kpis.deudaTotal);
+          document.getElementById('kpi-expedientes').innerText = data.kpis.expedientesPendientes;
+
+          // 2. Dibujar Gráficas
+          renderCharts(data);
+          
+          // 3. Procesar Tabla y Combobox de Proveedores
+          tablaGlobal = data.table;
+          llenarSelectProveedores();
+          aplicarFiltroProveedor(); // Dibuja la tabla completa de inicio
+
+          // Ocultar carga y mostrar dashboard
           document.getElementById('loading').style.display = 'none';
+          document.getElementById('dashboard-content').style.display = 'block';
+        })
+        .catch(error => {
+          console.error("Error obteniendo datos: ", error);
+          document.getElementById('loading').innerHTML = "⚠️ Hubo un error de conexión. Revisa los permisos de Apps Script.";
         });
     }
 
-    function renderData(data) {
-      document.getElementById('loading').style.display = 'none';
-
-      if (data.error) {
-        alert(data.error);
-        return;
-      }
-
-      // 1. Textos y KPIs
-      document.getElementById('txt-pagado').innerText = formatter.format(data.kpis.montoPagado);
-      document.getElementById('txt-deuda').innerText = formatter.format(data.kpis.deudaTotal);
-      document.getElementById('txt-exp-pendientes').innerText = data.kpis.expedientesPendientes;
-      document.getElementById('kpi-inicial').innerText = formatter.format(data.kpis.deudaInicial);
-      document.getElementById('kpi-pagado-inf').innerText = formatter.format(data.kpis.montoPagado);
-      document.getElementById('kpi-exp-total').innerText = data.kpis.totalExpedientes;
-      document.getElementById('kpi-exp-pagados').innerText = data.kpis.expedientesPagados;
-
-      // 2. Poblar Tabla
-      const tbody = document.getElementById('table-body');
-      tbody.innerHTML = '';
-      data.table.forEach(row => {
-        tbody.innerHTML += `<tr>
-          <td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td>
-          <td>${row[3]}</td><td style="font-weight:bold;">${formatter.format(row[4] || 0)}</td>
-        </tr>`;
-      });
-
-      // 3. Gráfico de Dona (Porcentaje de Avance)
+    // ==========================================
+    // FUNCIÓN PARA RENDERIZAR GRÁFICAS
+    // ==========================================
+    function renderCharts(data) {
+      
+      // --- Gráfica de Dona (Avance Financiero) ---
       if(donutChart) donutChart.destroy();
-      const centerTextPlugin = {
-        id: 'centerText',
-        beforeDraw: function(chart) {
-          var width = chart.width, height = chart.height, ctx = chart.ctx;
-          ctx.restore();
-          var fontSize = (height / 80).toFixed(2);
-          ctx.font = "bold " + fontSize + "em sans-serif";
-          ctx.textBaseline = "middle";
-          ctx.fillStyle = "white";
-          var text = data.kpis.porcentajePago + "%",
-              textX = Math.round((width - ctx.measureText(text).width) / 2),
-              textY = height / 2;
-          ctx.fillText(text, textX, textY);
-          ctx.save();
-        }
-      };
-
       const ctxDonut = document.getElementById('donutChart').getContext('2d');
       donutChart = new Chart(ctxDonut, {
         type: 'doughnut',
         data: {
+          labels: ['Pagado', 'Pendiente'],
           datasets: [{
-            data: [data.kpis.porcentajePago, 100 - data.kpis.porcentajePago],
-            backgroundColor: ['white', 'rgba(255,255,255,0.2)'],
+            data: [data.kpis.montoPagado, data.kpis.deudaTotal],
+            backgroundColor: ['#4caf50', '#b99725'], // Verde y Dorado
             borderWidth: 0
           }]
         },
-        options: { cutout: '75%', responsive: true, maintainAspectRatio: false, plugins: { tooltip: { enabled: false } } },
-        plugins: [centerTextPlugin]
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: { display: true, text: 'Avance de Pagos Global', color: '#fff', font: { size: 16 } },
+            legend: { position: 'bottom', labels: { color: '#ccc' } },
+            datalabels: { display: false } // Desactivado para no saturar la dona
+          }
+        }
       });
 
-      // 4. Gráfico de Barras Horizontales (Top 10 Proveedores)
-// 4. Gráfico de Barras Horizontales (Top 10 Proveedores)
+      // --- Gráfica de Barras (Top 10 Proveedores) ---
       if(barChart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
       barChart = new Chart(ctxBar, {
         type: 'bar',
-        plugins: [ChartDataLabels], // Activa el plugin de etiquetas
+        plugins: [ChartDataLabels], // Activamos plugin de texto
         data: {
           labels: data.graficaProveedores.labels,
           datasets: [{
             label: 'Deuda Pendiente ($)',
             data: data.graficaProveedores.values,
-            backgroundColor: '#b99725', 
+            backgroundColor: '#b99725',
             borderRadius: 4
           }]
         },
         options: {
-          indexAxis: 'y', 
+          indexAxis: 'y', // Barras horizontales
           responsive: true,
           maintainAspectRatio: false,
           layout: {
-            padding: {
-              right: 100 // Margen extra para que el texto no se corte
-            }
+            padding: { right: 80 } // Espacio para que quepan las cifras
           },
           plugins: {
-            title: { display: true, text: 'Top 10 Proveedores con Mayor Deuda Pendiente', font: { size: 16, weight: 'bold' } },
-            legend: { display: false }, 
-            // Configuración de las etiquetas sobre las barras
+            title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: '#fff', font: { size: 16 } },
+            legend: { display: false },
             datalabels: {
               anchor: 'end',
               align: 'right',
-              color: '#333',
+              color: '#e0e0e0',
               font: { weight: 'bold', size: 11 },
               formatter: function(value) {
-                return formatter.format(value); // Aplica el formato de $ MXN
+                return formatter.format(value);
               }
             }
           },
           scales: {
-            x: { ticks: { callback: function(value) { return formatter.format(value); } } }
+            x: { 
+              grid: { color: '#333' },
+              ticks: { callback: function(value) { return formatter.format(value); } }
+            },
+            y: { grid: { display: false } }
           }
         }
       });
     }
+
+    // ==========================================
+    // FUNCIONES DEL FILTRO DE PROVEEDORES
+    // ==========================================
+    function llenarSelectProveedores() {
+      const select = document.getElementById('proveedorSelect');
+      // Reseteamos las opciones
+      select.innerHTML = '<option value="TODOS">TODOS LOS PROVEEDORES</option>';
+      
+      // Extraemos los nombres (columna 0)
+      let proveedores = tablaGlobal.map(fila => fila[0]);
+      
+      // Filtramos únicos y ordenamos A-Z
+      let proveedoresUnicos = [...new Set(proveedores)].sort();
+      
+      // Creamos las opciones del combobox
+      proveedoresUnicos.forEach(prov => {
+        if (prov && prov.trim() !== "") {
+          let opt = document.createElement('option');
+          opt.value = prov;
+          opt.textContent = prov;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function aplicarFiltroProveedor() {
+      const provSelect = document.getElementById('proveedorSelect').value;
+      const tbody = document.querySelector('#tabla-servicios tbody');
+      tbody.innerHTML = ''; // Limpiamos la tabla
+      
+      let tablaFiltrada = tablaGlobal;
+      
+      // Si eligió algo distinto a "TODOS", filtramos la tabla global
+      if (provSelect !== "TODOS") {
+        tablaFiltrada = tablaGlobal.filter(fila => fila[0] === provSelect);
+      }
+      
+      // Inyectamos las filas filtradas
+      tablaFiltrada.forEach(row => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:bold;">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td>${row[3]}</td>
+          <td style="text-align: right; color:#b99725; font-weight: bold;">${formatter.format(row[4])}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Cargar los datos al iniciar la ventana
+    window.onload = loadData;
   </script>
 </body>
 </html>
