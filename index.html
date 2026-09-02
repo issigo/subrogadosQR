@@ -459,7 +459,45 @@
         }
       });
     }
-
+// --- Gráfica Lead Time (Semáforo) ---
+if(window.leadTimeChart) window.leadTimeChart.destroy();
+      const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
+      window.leadTimeChart = new Chart(ctxLead, {
+        type: 'bar',
+        plugins: [ChartDataLabels],
+        data: {
+          labels: data.graficaLeadTime.labels,
+          datasets: [{
+            data: data.graficaLeadTime.values,
+            backgroundColor: function(ctx) {
+              const dias = ctx.raw;
+              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; // Crítico
+              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; // Alerta
+              return '#4caf50'; // Óptimo
+            },
+            borderRadius: 2
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 50 } },
+          plugins: {
+            title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end', align: 'right', color: chartTextColor,
+              font: { weight: 'bold', size: 11 },
+              formatter: val => val + " Días"
+            }
+          },
+          scales: {
+            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } },
+            y: { grid: { display: false }, ticks: { color: chartTextColor } }
+          }
+        }
+      });
+    
     // --- Filtro Dinámico ---
     function llenarSelectProveedores() {
       const select = document.getElementById('proveedorSelect');
