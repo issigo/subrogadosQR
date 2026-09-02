@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Servicios Subrogados</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <style>
     :root {
       --guinda: #8b1c3f;
@@ -212,26 +213,43 @@
       });
 
       // 4. Gráfico de Barras Horizontales (Top 10 Proveedores)
+// 4. Gráfico de Barras Horizontales (Top 10 Proveedores)
       if(barChart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
       barChart = new Chart(ctxBar, {
         type: 'bar',
+        plugins: [ChartDataLabels], // Activa el plugin de etiquetas
         data: {
           labels: data.graficaProveedores.labels,
           datasets: [{
             label: 'Deuda Pendiente ($)',
             data: data.graficaProveedores.values,
-            backgroundColor: '#b99725', // Oro institucional
+            backgroundColor: '#b99725', 
             borderRadius: 4
           }]
         },
         options: {
-          indexAxis: 'y', // Hace las barras horizontales
+          indexAxis: 'y', 
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: {
+              right: 100 // Margen extra para que el texto no se corte
+            }
+          },
           plugins: {
             title: { display: true, text: 'Top 10 Proveedores con Mayor Deuda Pendiente', font: { size: 16, weight: 'bold' } },
-            legend: { display: false } // Oculta la leyenda para ahorrar espacio
+            legend: { display: false }, 
+            // Configuración de las etiquetas sobre las barras
+            datalabels: {
+              anchor: 'end',
+              align: 'right',
+              color: '#333',
+              font: { weight: 'bold', size: 11 },
+              formatter: function(value) {
+                return formatter.format(value); // Aplica el formato de $ MXN
+              }
+            }
           },
           scales: {
             x: { ticks: { callback: function(value) { return formatter.format(value); } } }
