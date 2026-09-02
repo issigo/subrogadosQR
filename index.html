@@ -61,6 +61,8 @@
     .btn-cancelar { background: #555; color: #fff; }
     .btn-guardar { background: #d3a32a; color: #000; }
 
+    body.institucional .filter-bar select, body.institucional .filter-bar input { background-color: #ffffff; color: #333333; border: 1px solid #aaa; }
+
     /* ==========================================
        MODO INSTITUCIONAL
        ========================================== */
@@ -439,15 +441,27 @@
       });
     }
 
-    function aplicarFiltroProveedor() {
+function aplicarFiltros() {
       const provSelect = document.getElementById('proveedorSelect').value;
+      const pacienteTexto = document.getElementById('pacienteInput').value.toLowerCase().trim();
       const tbody = document.getElementById('tablaBody');
       tbody.innerHTML = ''; 
-      let tablaFiltrada = provSelect === "TODOS" ? tablaGlobal : tablaGlobal.filter(fila => fila[0] === provSelect);
+      
+      // Filtramos evaluando tanto el select de proveedor como el texto del paciente
+      let tablaFiltrada = tablaGlobal.filter(fila => {
+        const coincideProveedor = (provSelect === "TODOS" || fila[0] === provSelect);
+        const nombrePaciente = String(fila[3]).toLowerCase();
+        const coincidePaciente = nombrePaciente.includes(pacienteTexto);
+        
+        return coincideProveedor && coincidePaciente;
+      });
       
       tablaFiltrada.forEach(row => {
         let tr = document.createElement('tr');
-        // row[0]=Proveedor, row[1]=Servicio, row[2]=Tipo, row[3]=Paciente, row[4]=Monto, row[5]=ID
+        // Limpiamos comillas simples para que no rompan el botón de Pagar
+        let provLimpio = String(row[0]).replace(/'/g, "\\'");
+        let pacLimpio = String(row[3]).replace(/'/g, "\\'");
+        
         tr.innerHTML = `
           <td class="td-prov">${row[0]}</td>
           <td>${row[1]}</td>
@@ -455,7 +469,7 @@
           <td>${row[3]}</td>
           <td class="td-monto">${formatter.format(row[4])}</td>
           <td style="text-align: center;">
-            <button onclick="abrirModalEdicion(${row[5]}, '${row[0].replace(/'/g, "\\'")}', '${row[3].replace(/'/g, "\\'")}')" 
+            <button onclick="abrirModalEdicion(${row[5]}, '${provLimpio}', '${pacLimpio}')" 
                     style="background:${esInstitucional ? '#611232' : '#b99725'}; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">
               ✏️ Pagar
             </button>
