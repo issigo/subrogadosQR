@@ -218,6 +218,36 @@
     </div>
   </div>
 
+<!-- Modal Actualizar / Pagar Registro -->
+  <div class="modal-overlay" id="modalEdicion">
+    <div class="modal-box">
+      <h2>Actualizar Pago y Estatus</h2>
+      <p id="editInfo" style="color:#aaa; font-size:12px; margin-bottom:15px;"></p>
+      
+      <!-- Campo oculto para guardar el ID -->
+      <input type="hidden" id="editId">
+
+      <div class="form-group">
+        <label>Nuevo Estatus Homologado</label>
+        <select id="editEstatus">
+          <option value="PAGADO">PAGADO</option>
+          <option value="CANCELADO">CANCELADO</option>
+          <option value="EN PROCESO / EN REVISIÓN">EN PROCESO / EN REVISIÓN</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha de Radicación (Pago)</label>
+        <input type="date" id="editFechaPago">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-cancelar" onclick="cerrarModalEdicion()">Cancelar</button>
+        <button class="btn btn-guardar" id="btnGuardarEdicion" onclick="guardarEdicion()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Contenedor del Dashboard -->
   <div id="dashboard-content" style="display: none;">
     <!-- KPIs -->
@@ -274,6 +304,7 @@
               <th>Tipo</th>
               <th>Paciente</th>
               <th style="text-align: right;">Monto Total</th>
+              <th style="text-align: center;">Acciones</th> <!-- NUEVO -->
             </tr>
           </thead>
           <tbody id="tablaBody">
@@ -505,6 +536,23 @@
         `;
         tbody.appendChild(tr);
       });
+      tablaFiltrada.forEach(row => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="td-prov">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td>${row[3]}</td>
+          <td class="td-monto">${formatter.format(row[4])}</td>
+          <td style="text-align: center;">
+            <button onclick="abrirModalEdicion(${row[5]}, '${row[0]}', '${row[3]}')" 
+                    style="background:#b99725; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">
+              ✏️ Pagar
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
     function abrirModal() {
@@ -520,6 +568,63 @@
       document.getElementById('modalRegistro').style.display = 'none';
     }
 
+// ==========================================
+    // FUNCIONES DE EDICIÓN
+    // ==========================================
+    function abrirModalEdicion(id, proveedor, paciente) {
+      document.getElementById('editId').value = id;
+      // Mostramos un resumen para que sepas qué estás editando
+      document.getElementById('editInfo').innerText = `Expediente #${id} - ${proveedor} (${paciente})`;
+      
+      // Ponemos la fecha de hoy por defecto para ahorrar clics
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('editFechaPago').value = hoy;
+      
+      document.getElementById('modalEdicion').style.display = 'flex';
+    }
+
+    function cerrarModalEdicion() {
+      document.getElementById('modalEdicion').style.display = 'none';
+    }
+
+    function guardarEdicion() {
+      const payload = {
+        action: "edit",
+        id: document.getElementById('editId').value,
+        estatusHomologado: document.getElementById('editEstatus').value,
+        fechaPago: document.getElementById('editFechaPago').value
+      };
+
+      if (!payload.fechaPago) {
+        alert("Por favor selecciona una fecha de pago."); return;
+      }
+
+      const btn = document.getElementById('btnGuardarEdicion');
+      btn.innerText = "Actualizando..."; btn.disabled = true;
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(result => {
+        btn.innerText = "Actualizar"; btn.disabled = false;
+        if (result.status === "success") {
+          cerrarModalEdicion(); 
+          // Al recargar los datos, este expediente desaparecerá de la tabla 
+          // (porque ya no será "PENDIENTE") y se sumará a los KPIs en verde.
+          loadData(); 
+        } else {
+          alert("Error: " + result.message);
+        }
+      })
+      .catch(error => {
+        btn.innerText = "Actualizar"; btn.disabled = false;
+        alert("Error de red."); 
+      });
+    }
+    
     function guardarRegistro() {
       const payload = {
         action: "add",
