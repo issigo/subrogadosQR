@@ -339,53 +339,142 @@
         });
     }
 
-    function renderCharts(data) {
+function renderCharts(data) {
       // Definimos colores dinámicos según el tema activo
       const chartTextColor = esInstitucional ? '#333333' : '#cccccc';
       const chartTitleColor = esInstitucional ? '#611232' : '#ffffff';
       const chartGridColor = esInstitucional ? '#e0e0e0' : '#333333';
-      const barraColor = esInstitucional ? '#8b1c3f' : '#d3a32a'; // Guinda en claro, Dorado en oscuro
+      const barraColor = esInstitucional ? '#8b1c3f' : '#d3a32a'; 
       const donaPendienteColor = esInstitucional ? '#8b1c3f' : '#d3a32a';
 
-      // --- Gráfica de Dona ---
-      // --- Plugin personalizado para poner texto en el centro de la dona ---
+      // ==========================================
+      // 1. PLUGIN Y GRÁFICA DE DONA
+      // ==========================================
       const centerTextPlugin = {
         id: 'centerText',
         beforeDraw: function(chart) {
-          const width = chart.width;
-          const height = chart.height;
-          const ctx = chart.ctx;
-          
+          const width = chart.width, height = chart.height, ctx = chart.ctx;
           ctx.restore();
           
-          // 1. Calcular el porcentaje pendiente
           const dataArr = chart.config.data.datasets[0].data;
-          const total = dataArr[0] + dataArr[1]; // Pagado + Pendiente
+          const total = dataArr[0] + dataArr[1]; 
           let porcentajeText = "0%";
-          if (total > 0) {
-            porcentajeText = ((dataArr[1] / total) * 100).toFixed(1) + "%";
-          }
+          if (total > 0) porcentajeText = ((dataArr[1] / total) * 100).toFixed(1) + "%";
 
-          // 2. Dibujar el número grande en el centro
           const fontSize = (height / 120).toFixed(2);
           ctx.font = "bold " + fontSize + "em Segoe UI, sans-serif";
           ctx.textBaseline = "middle";
-          ctx.fillStyle = esInstitucional ? '#8b1c3f' : '#d3a32a'; // Cambia de color con el menú oculto
+          ctx.fillStyle = esInstitucional ? '#8b1c3f' : '#d3a32a'; 
           
           const textX = Math.round((width - ctx.measureText(porcentajeText).width) / 2);
-          const textY = height / 2 + 15; // Ajuste vertical
+          const textY = height / 2 + 15; 
           ctx.fillText(porcentajeText, textX, textY);
           
-          // 3. Dibujar la palabra "Pendiente" debajo del número
           ctx.font = "bold " + (fontSize / 3).toFixed(2) + "em Segoe UI, sans-serif";
           ctx.fillStyle = esInstitucional ? '#666666' : '#a0a0a0';
           const label = "PENDIENTE";
           const labelX = Math.round((width - ctx.measureText(label).width) / 2);
           ctx.fillText(label, labelX, textY + 25);
-
           ctx.save();
         }
       };
+
+      if(donutChart) donutChart.destroy();
+      const ctxDonut = document.getElementById('donutChart').getContext('2d');
+      donutChart = new Chart(ctxDonut, {
+        type: 'doughnut',
+        plugins: [ChartDataLabels, centerTextPlugin], 
+        data: {
+          labels: ['Pagado', 'Pendiente'],
+          datasets: [{
+            data: [data.kpis.montoPagado, data.kpis.deudaTotal],
+            backgroundColor: ['#4caf50', donaPendienteColor],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '70%', 
+          plugins: {
+            title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
+            legend: { position: 'bottom', labels: { color: chartTextColor } },
+            datalabels: { display: false } 
+          }
+        }
+      });
+
+      // ==========================================
+      // 2. GRÁFICA DE BARRAS (TOP 10 PROVEEDORES)
+      // ==========================================
+      if(barChart) barChart.destroy();
+      const ctxBar = document.getElementById('barChart').getContext('2d');
+      barChart = new Chart(ctxBar, {
+        type: 'bar',
+        plugins: [ChartDataLabels],
+        data: {
+          labels: data.graficaProveedores.labels,
+          datasets: [{
+            data: data.graficaProveedores.values,
+            backgroundColor: barraColor, 
+            borderRadius: 2
+          }]
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 80 } },
+          plugins: {
+            title: { display: true, text: 'Top 10 Proveedores', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 },
+              formatter: function(value) { return formatter.format(value); }
+            }
+          },
+          scales: {
+            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: function(val) { return formatter.format(val); } } },
+            y: { grid: { display: false }, ticks: { color: chartTextColor } }
+          }
+        }
+      });
+
+      // ==========================================
+      // 3. GRÁFICA LEAD TIME (SEMÁFORO)
+      // ==========================================
+      if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
+      const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
+      leadTimeChart = new Chart(ctxLead, {
+        type: 'bar',
+        plugins: [ChartDataLabels],
+        data: {
+          labels: data.graficaLeadTime.labels,
+          datasets: [{
+            data: data.graficaLeadTime.values,
+            backgroundColor: function(ctx) {
+              const dias = ctx.raw;
+              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; // Crítico
+              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; // Alerta
+              return '#4caf50'; // Óptimo
+            },
+            borderRadius: 2
+          }]
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 50 } },
+          plugins: {
+            title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 },
+              formatter: val => val + " Días"
+            }
+          },
+          scales: {
+            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } },
+            y: { grid: { display: false }, ticks: { color: chartTextColor } }
+          }
+        }
+      });
+    }
 
       // --- Gráfica de Dona ---
       if(donutChart) donutChart.destroy();
