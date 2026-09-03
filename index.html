@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Servicios Subrogados Quintana Roo</title>
+  <title>Dashboard de Servicios Subrogados</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
@@ -35,30 +33,10 @@
     .chart-card { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative; transition: all 0.4s ease; }
 
     .table-section { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease; }
-
-    /* ==========================================
-       PAGINACIÓN DE LA TABLA
-       ========================================== */
-    .pagination-controls {
-      display: flex; justify-content: flex-end; align-items: center; 
-      gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
-    }
-    .btn-page {
-      background-color: #333333; color: #ffffff; border: 1px solid #555; 
-      padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;
-    }
-    .btn-page:hover:not(:disabled) { background-color: #555555; }
-    .btn-page:disabled { opacity: 0.3; cursor: not-allowed; }
-    #pageInfo { font-size: 13px; color: #aaaaaa; }
-
-    /* Adaptación al Modo Institucional */
-    body.institucional .pagination-controls { border-top: 1px solid #ddd; }
-    body.institucional .btn-page { background-color: #ffffff; color: #611232; border: 1px solid #ccc; }
-    body.institucional .btn-page:hover:not(:disabled) { background-color: #f0f0f0; }
-    body.institucional #pageInfo { color: #555555; font-weight: bold; }
-    .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+    .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; flex-wrap: wrap; }
     .filter-bar label { font-weight: bold; color: #eeeeee; font-size: 14px; }
-    .filter-bar select { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; width: 300px; }
+    .filter-bar select, .filter-bar input { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; }
+    .filter-bar select { width: 300px; }
     
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
@@ -67,6 +45,15 @@
     .td-prov { font-weight: bold; color: #ffffff; }
     .td-monto { text-align: right; color: #d3a32a; font-weight: bold; }
     #loading { text-align: center; padding: 50px; font-size: 18px; color: #d3a32a; }
+
+    /* ==========================================
+       PAGINACIÓN
+       ========================================== */
+    .pagination-controls { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; }
+    .btn-page { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+    .btn-page:hover:not(:disabled) { background-color: #555555; }
+    .btn-page:disabled { opacity: 0.3; cursor: not-allowed; }
+    #pageInfo { font-size: 13px; color: #aaaaaa; }
 
     /* ==========================================
        MODALES (FORMULARIOS)
@@ -82,8 +69,6 @@
     .btn-cancelar { background: #555; color: #fff; }
     .btn-guardar { background: #d3a32a; color: #000; }
 
-    body.institucional .filter-bar select, body.institucional .filter-bar input { background-color: #ffffff; color: #333333; border: 1px solid #aaa; }
-
     /* ==========================================
        MODO INSTITUCIONAL
        ========================================== */
@@ -96,12 +81,16 @@
     body.institucional .color-gold { color: #611232; } 
     body.institucional .filter-bar { border-bottom: 1px solid #ddd; }
     body.institucional .filter-bar label { color: #333333; }
-    body.institucional .filter-bar select { background-color: #ffffff; color: #333333; border: 1px solid #aaa; }
+    body.institucional .filter-bar select, body.institucional .filter-bar input { background-color: #ffffff; color: #333333; border: 1px solid #aaa; }
     body.institucional th { color: #611232; border-bottom: 2px solid #b99725; }
     body.institucional td { border-bottom: 1px solid #eeeeee; }
     body.institucional tr:hover { background-color: #f9f9f9; }
     body.institucional .td-prov { color: #333333; }
     body.institucional .td-monto { color: #611232; }
+    body.institucional .pagination-controls { border-top: 1px solid #ddd; }
+    body.institucional .btn-page { background-color: #ffffff; color: #611232; border: 1px solid #ccc; }
+    body.institucional .btn-page:hover:not(:disabled) { background-color: #f0f0f0; }
+    body.institucional #pageInfo { color: #555555; font-weight: bold; }
     body.institucional .modal-box { background: #ffffff; border-top: 5px solid #611232; }
     body.institucional .modal-box h2 { color: #611232; }
     body.institucional .form-group label { color: #555; }
@@ -119,7 +108,8 @@
       .charts-grid-top { grid-template-columns: 1fr; }
       .chart-card { height: 350px; }
       .filter-bar { flex-direction: column; align-items: stretch; }
-      .filter-bar select { width: 100%; }
+      .filter-bar select, .filter-bar input { width: 100%; }
+      .pagination-controls { flex-direction: column; }
       body { padding: 10px; }
     }
     @media screen and (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
@@ -135,8 +125,8 @@
     <div class="topbar-controls">
       <button class="btn-nuevo" onclick="abrirModal()">+ Nuevo Registro</button>
       <select id="hospitalSelect" onchange="loadData()">
-        <option value="TODAS" selected>TODAS LAS UNIDADES</option>
-        <option value="HG CANCÚN">HG CANCÚN</option>
+        <option value="TODAS">TODAS LAS UNIDADES</option>
+        <option value="HG CANCÚN" selected>HG CANCÚN</option>
         <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
         <option value="HG CHETUMAL">HG CHETUMAL</option>
         <option value="HG COZUMEL">HG COZUMEL</option>
@@ -249,19 +239,16 @@
       <div class="chart-card"><canvas id="leadTimeChart"></canvas></div>
     </div>
 
-    <!-- Tabla de Proveedores -->
+    <!-- Tabla y Filtros -->
     <div class="table-section">
-     <div class="filter-bar">
+      <div class="filter-bar">
         <label for="proveedorSelect">🔍 Filtros:</label>
-        
         <select id="proveedorSelect" onchange="aplicarFiltros()">
           <option value="TODOS">TODOS LOS PROVEEDORES</option>
         </select>
-
-        <!-- Nuevo buscador dinámico por paciente -->
-        <input type="text" id="pacienteInput" oninput="aplicarFiltros()" placeholder="Buscar paciente..." 
-               style="padding: 8px 15px; border-radius: 4px; border: 1px solid #555; background-color: #333333; color: #ffffff; width: 250px;">
+        <input type="text" id="pacienteInput" oninput="aplicarFiltros()" placeholder="Buscar paciente..." style="width: 250px;">
       </div>
+      
       <div style="overflow-x: auto;">
         <table>
           <thead>
@@ -278,20 +265,15 @@
             <!-- Filas dinámicas -->
           </tbody>
         </table>
-
-        <div style="overflow-x: auto;">
-        <table>
-          <!-- ... tus encabezados y tbody id="tablaBody" ... -->
-        </table>
       </div>
-      
-      <!-- NUEVO: Controles de Paginación -->
+
+      <!-- Controles de Paginación -->
       <div class="pagination-controls" id="paginationControls">
         <button class="btn-page" onclick="prevPage()" id="btnPrev">Anterior</button>
         <span id="pageInfo">Página 1 de 1</span>
         <button class="btn-page" onclick="nextPage()" id="btnNext">Siguiente</button>
       </div>
-      </div>
+
     </div>
   </div>
 
@@ -300,15 +282,20 @@
     // CONFIGURACIÓN PRINCIPAL
     // ==========================================
     Chart.register(ChartDataLabels);
-    const API_URL = "https://script.google.com/macros/s/AKfycbzSnX6mk5vObtXlEcOcPIlHZXUFUSABdA6Fy1MliCpMdWYSIQqM5RTIi2FKNBXZcNoj9Q/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzSnX6mk5vObtXlEcOcPIlHZXUFUSABdA6Fy1MliCpMdWYSIQqM5RTIi2FKNBXZcNoj9Q/exec"; 
     const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
     
     let donutChart = null;
     let barChart = null;
     let leadTimeChart = null;
+    
     let tablaGlobal = [];
+    let tablaFiltradaActual = [];
     let currentData = null; 
     let esInstitucional = false;
+    
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
     // ==========================================
     // LOGICA DEL DASHBOARD
@@ -460,7 +447,7 @@
     }
 
     // ==========================================
-    // FILTROS Y TABLA
+    // FILTROS Y PAGINACIÓN
     // ==========================================
     function llenarSelectProveedores() {
       const select = document.getElementById('proveedorSelect');
@@ -475,24 +462,31 @@
       });
     }
 
-function aplicarFiltros() {
+    function aplicarFiltros() {
       const provSelect = document.getElementById('proveedorSelect').value;
-      const pacienteTexto = document.getElementById('pacienteInput').value.toLowerCase().trim();
-      const tbody = document.getElementById('tablaBody');
-      tbody.innerHTML = ''; 
+      const pacienteTexto = document.getElementById('pacienteInput') ? document.getElementById('pacienteInput').value.toLowerCase().trim() : '';
       
-      // Filtramos evaluando tanto el select de proveedor como el texto del paciente
-      let tablaFiltrada = tablaGlobal.filter(fila => {
+      tablaFiltradaActual = tablaGlobal.filter(fila => {
         const coincideProveedor = (provSelect === "TODOS" || fila[0] === provSelect);
         const nombrePaciente = String(fila[3]).toLowerCase();
         const coincidePaciente = nombrePaciente.includes(pacienteTexto);
-        
         return coincideProveedor && coincidePaciente;
       });
       
-      tablaFiltrada.forEach(row => {
+      currentPage = 1; 
+      renderTablePage();
+    }
+
+    function renderTablePage() {
+      const tbody = document.getElementById('tablaBody');
+      tbody.innerHTML = ''; 
+      
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = startIndex + rowsPerPage;
+      const pageData = tablaFiltradaActual.slice(startIndex, endIndex);
+      
+      pageData.forEach(row => {
         let tr = document.createElement('tr');
-        // Limpiamos comillas simples para que no rompan el botón de Pagar
         let provLimpio = String(row[0]).replace(/'/g, "\\'");
         let pacLimpio = String(row[3]).replace(/'/g, "\\'");
         
@@ -511,6 +505,24 @@ function aplicarFiltros() {
         `;
         tbody.appendChild(tr);
       });
+      
+      actualizarControlesPaginacion();
+    }
+
+    function actualizarControlesPaginacion() {
+      const totalPages = Math.ceil(tablaFiltradaActual.length / rowsPerPage) || 1;
+      document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages} (Total: ${tablaFiltradaActual.length} expedientes)`;
+      document.getElementById('btnPrev').disabled = (currentPage === 1);
+      document.getElementById('btnNext').disabled = (currentPage === totalPages);
+    }
+
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; renderTablePage(); }
+    }
+
+    function nextPage() {
+      const totalPages = Math.ceil(tablaFiltradaActual.length / rowsPerPage);
+      if (currentPage < totalPages) { currentPage++; renderTablePage(); }
     }
 
     // ==========================================
