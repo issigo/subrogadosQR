@@ -35,6 +35,27 @@
     .chart-card { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); height: 400px; position: relative; transition: all 0.4s ease; }
 
     .table-section { background-color: #222222; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.4s ease; }
+
+    /* ==========================================
+       PAGINACIÓN DE LA TABLA
+       ========================================== */
+    .pagination-controls {
+      display: flex; justify-content: flex-end; align-items: center; 
+      gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
+    }
+    .btn-page {
+      background-color: #333333; color: #ffffff; border: 1px solid #555; 
+      padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;
+    }
+    .btn-page:hover:not(:disabled) { background-color: #555555; }
+    .btn-page:disabled { opacity: 0.3; cursor: not-allowed; }
+    #pageInfo { font-size: 13px; color: #aaaaaa; }
+
+    /* Adaptación al Modo Institucional */
+    body.institucional .pagination-controls { border-top: 1px solid #ddd; }
+    body.institucional .btn-page { background-color: #ffffff; color: #611232; border: 1px solid #ccc; }
+    body.institucional .btn-page:hover:not(:disabled) { background-color: #f0f0f0; }
+    body.institucional #pageInfo { color: #555555; font-weight: bold; }
     .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
     .filter-bar label { font-weight: bold; color: #eeeeee; font-size: 14px; }
     .filter-bar select { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; width: 300px; }
@@ -257,6 +278,19 @@
             <!-- Filas dinámicas -->
           </tbody>
         </table>
+
+        <div style="overflow-x: auto;">
+        <table>
+          <!-- ... tus encabezados y tbody id="tablaBody" ... -->
+        </table>
+      </div>
+      
+      <!-- NUEVO: Controles de Paginación -->
+      <div class="pagination-controls" id="paginationControls">
+        <button class="btn-page" onclick="prevPage()" id="btnPrev">Anterior</button>
+        <span id="pageInfo">Página 1 de 1</span>
+        <button class="btn-page" onclick="nextPage()" id="btnNext">Siguiente</button>
+      </div>
       </div>
     </div>
   </div>
