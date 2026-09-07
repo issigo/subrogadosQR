@@ -241,12 +241,21 @@
 
     <!-- Tabla y Filtros -->
     <div class="table-section">
-      <div class="filter-bar">
-        <label for="proveedorSelect">🔍 Filtros:</label>
+<div class="filter-bar">
+        <label>🔍 Filtros:</label>
+        
+        <!-- Nuevo filtro por estatus -->
+        <select id="estatusSelect" onchange="aplicarFiltros()">
+          <option value="PENDIENTES" selected>SOLO PENDIENTES</option>
+          <option value="PAGADOS">SOLO PAGADOS</option>
+          <option value="CANCELADOS">CANCELADOS / DEVUELTOS</option>
+          <option value="TODOS">TODOS LOS ESTATUS</option>
+        </select>
+
         <select id="proveedorSelect" onchange="aplicarFiltros()">
           <option value="TODOS">TODOS LOS PROVEEDORES</option>
         </select>
-        <input type="text" id="pacienteInput" oninput="aplicarFiltros()" placeholder="Buscar paciente..." style="width: 250px;">
+        <input type="text" id="pacienteInput" oninput="aplicarFiltros()" placeholder="Buscar paciente..." style="width: 200px;">
       </div>
       
       <div style="overflow-x: auto;">
@@ -257,6 +266,7 @@
               <th>Servicio</th>
               <th>Tipo</th>
               <th>Paciente</th>
+              <th>Estatus</th> <!-- NUEVA COLUMNA -->
               <th style="text-align: right;">Monto Total</th>
               <th style="text-align: center;">Acciones</th>
             </tr>
@@ -462,15 +472,23 @@
       });
     }
 
-    function aplicarFiltros() {
+function aplicarFiltros() {
+      const estatusFiltro = document.getElementById('estatusSelect').value;
       const provSelect = document.getElementById('proveedorSelect').value;
       const pacienteTexto = document.getElementById('pacienteInput') ? document.getElementById('pacienteInput').value.toLowerCase().trim() : '';
       
       tablaFiltradaActual = tablaGlobal.filter(fila => {
         const coincideProveedor = (provSelect === "TODOS" || fila[0] === provSelect);
-        const nombrePaciente = String(fila[3]).toLowerCase();
-        const coincidePaciente = nombrePaciente.includes(pacienteTexto);
-        return coincideProveedor && coincidePaciente;
+        const coincidePaciente = String(fila[3]).toLowerCase().includes(pacienteTexto);
+        const estatusFila = String(fila[6]).toUpperCase();
+        
+        let coincideEstatus = false;
+        if (estatusFiltro === "TODOS") coincideEstatus = true;
+        else if (estatusFiltro === "PENDIENTES") coincideEstatus = estatusFila.includes("PENDIENTE") || estatusFila.includes("PROCESO") || estatusFila.includes("REVISIÓN");
+        else if (estatusFiltro === "PAGADOS") coincideEstatus = estatusFila.includes("PAGADO");
+        else if (estatusFiltro === "CANCELADOS") coincideEstatus = estatusFila.includes("CANCELADO") || estatusFila.includes("DEVUELTO");
+
+        return coincideProveedor && coincidePaciente && coincideEstatus;
       });
       
       currentPage = 1; 
@@ -482,30 +500,34 @@
       tbody.innerHTML = ''; 
       
       const startIndex = (currentPage - 1) * rowsPerPage;
-      const endIndex = startIndex + rowsPerPage;
-      const pageData = tablaFiltradaActual.slice(startIndex, endIndex);
+      const pageData = tablaFiltradaActual.slice(startIndex, startIndex + rowsPerPage);
       
       pageData.forEach(row => {
         let tr = document.createElement('tr');
         let provLimpio = String(row[0]).replace(/'/g, "\\'");
         let pacLimpio = String(row[3]).replace(/'/g, "\\'");
         
+        // Colores para el estatus
+        let estatusStr = String(row[6]).toUpperCase();
+        let estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#555; color:#fff;">${row[6]}</span>`;
+        if (estatusStr.includes("PAGADO")) estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#4caf50; color:#fff;">${row[6]}</span>`;
+        else if (estatusStr.includes("CANCELADO") || estatusStr.includes("DEVUELTO")) estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#f44336; color:#fff;">${row[6]}</span>`;
+
+        // Bloqueo del botón "Pagar" si ya está liquidado
+        let botonAccion = `<button onclick="abrirModalEdicion(${row[5]}, '${provLimpio}', '${pacLimpio}')" style="background:${esInstitucional ? '#611232' : '#b99725'}; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">✏️ Pagar</button>`;
+        if (estatusStr.includes("PAGADO") || estatusStr.includes("CANCELADO")) botonAccion = `<span style="color:#aaa; font-size:12px;">✅ Cerrado</span>`;
+
         tr.innerHTML = `
           <td class="td-prov">${row[0]}</td>
           <td>${row[1]}</td>
           <td>${row[2]}</td>
           <td>${row[3]}</td>
+          <td>${estatusBadge}</td>
           <td class="td-monto">${formatter.format(row[4])}</td>
-          <td style="text-align: center;">
-            <button onclick="abrirModalEdicion(${row[5]}, '${provLimpio}', '${pacLimpio}')" 
-                    style="background:${esInstitucional ? '#611232' : '#b99725'}; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">
-              ✏️ Pagar
-            </button>
-          </td>
+          <td style="text-align: center;">${botonAccion}</td>
         `;
         tbody.appendChild(tr);
       });
-      
       actualizarControlesPaginacion();
     }
 
