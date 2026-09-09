@@ -324,7 +324,7 @@
         .then(response => response.json())
         .then(data => {
           currentData = data; 
-          document.getElementById('kpi-inicial').innerText = formatter.format(data.kpis.deudaInicial);
+          //document.getElementById('kpi-inicial').innerText = formatter.format(data.kpis.deudaInicial);
           document.getElementById('kpi-pagado').innerText = formatter.format(data.kpis.montoPagado);
           document.getElementById('kpi-pendiente').innerText = formatter.format(data.kpis.deudaTotal);
           document.getElementById('kpi-expedientes').innerText = data.kpis.expedientesPendientes;
