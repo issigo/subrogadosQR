@@ -262,6 +262,7 @@
         <table>
           <thead>
             <tr>
+              <th>Unidad</th> <!-- NUEVA COLUMNA -->
               <th>Proveedor</th>
               <th>Servicio</th>
               <th>Tipo</th>
@@ -525,6 +526,7 @@ function aplicarFiltros() {
           <td>${estatusBadge}</td>
           <td class="td-monto">${formatter.format(row[4])}</td>
           <td style="text-align: center;">${botonAccion}</td>
+          <td>${row[7}</td>
         `;
         tbody.appendChild(tr);
       });
