@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,7 +37,7 @@
     .filter-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; flex-wrap: wrap; }
     .filter-bar label { font-weight: bold; color: #eeeeee; font-size: 14px; }
     .filter-bar select, .filter-bar input { background-color: #333333; color: #ffffff; border: 1px solid #555; padding: 8px 15px; border-radius: 4px; }
-    .filter-bar select { width: 300px; }
+    .filter-bar select { width: 220px; }
     
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
@@ -125,13 +126,13 @@
     <div class="topbar-controls">
       <button class="btn-nuevo" onclick="abrirModal()">+ Nuevo Registro</button>
       <select id="hospitalSelect" onchange="loadData()">
-        <option value="TODAS" selected>TODAS LAS UNIDADES</option>
-        <option value="HG CANCÚN">HG CANCÚN</option>
-        <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
-        <option value="HG CHETUMAL">HG CHETUMAL</option>
-        <option value="HG COZUMEL">HG COZUMEL</option>
-        <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
-        <option value="DSS">DSS</option>
+        <option value="TODAS">🌎 TODAS LAS UNIDADES</option>
+        <option value="HG CANCÚN" selected>🏥 HG CANCÚN</option>
+        <option value="HG PLAYA DEL CARMEN">🏥 HG PLAYA DEL CARMEN</option>
+        <option value="HG CHETUMAL">🏥 HG CHETUMAL</option>
+        <option value="HG COZUMEL">🏥 HG COZUMEL</option>
+        <option value="HG FCP">🏥 HG FELIPE CARRILLO PUERTO</option>
+        <option value="DSS">🏢 DSS (Oficinas Centrales)</option>
       </select>
     </div>
   </div>
@@ -145,12 +146,12 @@
       <div class="form-group">
         <label>Unidad Hospitalaria</label>
         <select id="formUnidad">
-          <option value="HG CANCÚN">HG CANCÚN</option>
-          <option value="HG PLAYA DEL CARMEN">HG PLAYA DEL CARMEN</option>
-          <option value="HG CHETUMAL">HG CHETUMAL</option>
-          <option value="HG COZUMEL">HG COZUMEL</option>
-          <option value="HG FCP">HG FELIPE CARRILLO PUERTO</option>
-          <option value="DSS">DSS</option>
+          <option value="HG CANCÚN">🏥 HG CANCÚN</option>
+          <option value="HG PLAYA DEL CARMEN">🏥 HG PLAYA DEL CARMEN</option>
+          <option value="HG CHETUMAL">🏥 HG CHETUMAL</option>
+          <option value="HG COZUMEL">🏥 HG COZUMEL</option>
+          <option value="HG FCP">🏥 HG FELIPE CARRILLO PUERTO</option>
+          <option value="DSS">🏢 DSS (Oficinas Centrales)</option>
         </select>
       </div>
       <div class="form-group">
@@ -228,30 +229,27 @@
       <div class="kpi-card"><div class="kpi-title">Expedientes Pendientes</div><div class="kpi-value color-orange" id="kpi-expedientes">0</div></div>
     </div>
 
-    <!-- Gráficas Superiores (Dona y Top 10) -->
+    <!-- Gráficas Superiores -->
     <div class="charts-grid-top">
       <div class="chart-card"><canvas id="donutChart"></canvas></div>
       <div class="chart-card"><canvas id="barChart"></canvas></div>
     </div>
 
-    <!-- Gráfica Inferior (Lead Time) -->
+    <!-- Gráfica Inferior -->
     <div class="charts-grid-bottom">
       <div class="chart-card"><canvas id="leadTimeChart"></canvas></div>
     </div>
 
     <!-- Tabla y Filtros -->
     <div class="table-section">
-<div class="filter-bar">
+      <div class="filter-bar">
         <label>🔍 Filtros:</label>
-        
-        <!-- Nuevo filtro por estatus -->
         <select id="estatusSelect" onchange="aplicarFiltros()">
           <option value="PENDIENTES" selected>SOLO PENDIENTES</option>
           <option value="PAGADOS">SOLO PAGADOS</option>
           <option value="CANCELADOS">CANCELADOS / DEVUELTOS</option>
           <option value="TODOS">TODOS LOS ESTATUS</option>
         </select>
-
         <select id="proveedorSelect" onchange="aplicarFiltros()">
           <option value="TODOS">TODOS LOS PROVEEDORES</option>
         </select>
@@ -262,12 +260,12 @@
         <table>
           <thead>
             <tr>
-              <th>Unidad</th> <!-- NUEVA COLUMNA -->
+              <th>Unidad</th>
               <th>Proveedor</th>
               <th>Servicio</th>
               <th>Tipo</th>
               <th>Paciente</th>
-              <th>Estatus</th> <!-- NUEVA COLUMNA -->
+              <th>Estatus</th>
               <th style="text-align: right;">Monto Total</th>
               <th style="text-align: center;">Acciones</th>
             </tr>
@@ -293,24 +291,18 @@
     // CONFIGURACIÓN PRINCIPAL
     // ==========================================
     Chart.register(ChartDataLabels);
-    
-        const API_URL = "https://script.google.com/macros/s/AKfycbzSnX6mk5vObtXlEcOcPIlHZXUFUSABdA6Fy1MliCpMdWYSIQqM5RTIi2FKNBXZcNoj9Q/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzSnX6mk5vObtXlEcOcPIlHZXUFUSABdA6Fy1MliCpMdWYSIQqM5RTIi2FKNBXZcNoj9Q/exec"; 
     const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
     
-    let donutChart = null;
-    let barChart = null;
-    let leadTimeChart = null;
-    
-    let tablaGlobal = [];
-    let tablaFiltradaActual = [];
+    let donutChart = null, barChart = null, leadTimeChart = null;
+    let tablaGlobal = [], tablaFiltradaActual = [];
     let currentData = null; 
     let esInstitucional = false;
-    
     let currentPage = 1;
     const rowsPerPage = 10;
 
     // ==========================================
-    // LOGICA DEL DASHBOARD
+    // LÓGICA DEL DASHBOARD
     // ==========================================
     function toggleTheme() {
       esInstitucional = !esInstitucional;
@@ -358,13 +350,12 @@
       const barraColor = esInstitucional ? '#8b1c3f' : '#d3a32a'; 
       const donaPendienteColor = esInstitucional ? '#8b1c3f' : '#d3a32a';
 
-      // 1. Dona (Avance Financiero con centro dinámico)
+      // 1. Dona
       const centerTextPlugin = {
         id: 'centerText',
         beforeDraw: function(chart) {
           const width = chart.width, height = chart.height, ctx = chart.ctx;
           ctx.restore();
-          
           const dataArr = chart.config.data.datasets[0].data;
           const total = dataArr[0] + dataArr[1]; 
           let porcentajeText = "0%";
@@ -382,8 +373,7 @@
           ctx.font = "bold " + (fontSize / 3).toFixed(2) + "em Segoe UI, sans-serif";
           ctx.fillStyle = esInstitucional ? '#666666' : '#a0a0a0';
           const label = "PENDIENTE";
-          const labelX = Math.round((width - ctx.measureText(label).width) / 2);
-          ctx.fillText(label, labelX, textY + 25);
+          ctx.fillText(label, Math.round((width - ctx.measureText(label).width) / 2), textY + 25);
           ctx.save();
         }
       };
@@ -391,70 +381,27 @@
       if(donutChart instanceof Chart) donutChart.destroy();
       const ctxDonut = document.getElementById('donutChart').getContext('2d');
       donutChart = new Chart(ctxDonut, {
-        type: 'doughnut',
-        plugins: [ChartDataLabels, centerTextPlugin], 
-        data: {
-          labels: ['Pagado', 'Pendiente'],
-          datasets: [{ data: [data.kpis.montoPagado, data.kpis.deudaTotal], backgroundColor: ['#4caf50', donaPendienteColor], borderWidth: 0 }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false, cutout: '70%', 
-          plugins: {
-            title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { position: 'bottom', labels: { color: chartTextColor } }, datalabels: { display: false } 
-          }
-        }
+        type: 'doughnut', plugins: [ChartDataLabels, centerTextPlugin], 
+        data: { labels: ['Pagado', 'Pendiente'], datasets: [{ data: [data.kpis.montoPagado, data.kpis.deudaTotal], backgroundColor: ['#4caf50', donaPendienteColor], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { title: { display: true, text: 'Avance de Pagos Global', color: chartTitleColor, font: { size: 14, weight: 'bold' } }, legend: { position: 'bottom', labels: { color: chartTextColor } }, datalabels: { display: false } } }
       });
 
-      // 2. Barras (Top 10 Proveedores)
+      // 2. Barras Top 10
       if(barChart instanceof Chart) barChart.destroy();
       const ctxBar = document.getElementById('barChart').getContext('2d');
       barChart = new Chart(ctxBar, {
         type: 'bar', plugins: [ChartDataLabels],
         data: { labels: data.graficaProveedores.labels, datasets: [{ data: data.graficaProveedores.values, backgroundColor: barraColor, borderRadius: 2 }] },
-        options: {
-          indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 80 } },
-          plugins: {
-            title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { display: false },
-            datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: function(value) { return formatter.format(value); } }
-          },
-          scales: {
-            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: function(val) { return formatter.format(val); } } },
-            y: { grid: { display: false }, ticks: { color: chartTextColor } }
-          }
-        }
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 80 } }, plugins: { title: { display: true, text: 'Top 10 Proveedores (Mayor Deuda Activa)', color: chartTitleColor, font: { size: 14, weight: 'bold' } }, legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: function(value) { return formatter.format(value); } } }, scales: { x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor, callback: function(val) { return formatter.format(val); } } }, y: { grid: { display: false }, ticks: { color: chartTextColor } } } }
       });
 
-      // 3. Lead Time (Semáforo)
+      // 3. Lead Time Semáforo
       if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
       const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
       leadTimeChart = new Chart(ctxLead, {
         type: 'bar', plugins: [ChartDataLabels],
-        data: {
-          labels: data.graficaLeadTime.labels,
-          datasets: [{
-            data: data.graficaLeadTime.values,
-            backgroundColor: function(ctx) {
-              const dias = ctx.raw;
-              if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f';
-              if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a';
-              return '#4caf50';
-            }, borderRadius: 2
-          }]
-        },
-        options: {
-          indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } },
-          plugins: {
-            title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } },
-            legend: { display: false },
-            datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: val => val + " Días" }
-          },
-          scales: {
-            x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } },
-            y: { grid: { display: false }, ticks: { color: chartTextColor } }
-          }
-        }
+        data: { labels: data.graficaLeadTime.labels, datasets: [{ data: data.graficaLeadTime.values, backgroundColor: function(ctx) { const dias = ctx.raw; if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; return '#4caf50'; }, borderRadius: 2 }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } }, plugins: { title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } }, legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: val => val + " Días" } }, scales: { x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } }, y: { grid: { display: false }, ticks: { color: chartTextColor } } } }
       });
     }
 
@@ -474,7 +421,7 @@
       });
     }
 
-function aplicarFiltros() {
+    function aplicarFiltros() {
       const estatusFiltro = document.getElementById('estatusSelect').value;
       const provSelect = document.getElementById('proveedorSelect').value;
       const pacienteTexto = document.getElementById('pacienteInput') ? document.getElementById('pacienteInput').value.toLowerCase().trim() : '';
@@ -509,17 +456,16 @@ function aplicarFiltros() {
         let provLimpio = String(row[0]).replace(/'/g, "\\'");
         let pacLimpio = String(row[3]).replace(/'/g, "\\'");
         
-        // Colores para el estatus
         let estatusStr = String(row[6]).toUpperCase();
         let estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#555; color:#fff;">${row[6]}</span>`;
         if (estatusStr.includes("PAGADO")) estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#4caf50; color:#fff;">${row[6]}</span>`;
         else if (estatusStr.includes("CANCELADO") || estatusStr.includes("DEVUELTO")) estatusBadge = `<span style="font-size:11px; padding:3px 6px; border-radius:3px; background:#f44336; color:#fff;">${row[6]}</span>`;
 
-        // Bloqueo del botón "Pagar" si ya está liquidado
         let botonAccion = `<button onclick="abrirModalEdicion(${row[5]}, '${provLimpio}', '${pacLimpio}')" style="background:${esInstitucional ? '#611232' : '#b99725'}; color:#fff; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">✏️ Pagar</button>`;
         if (estatusStr.includes("PAGADO") || estatusStr.includes("CANCELADO")) botonAccion = `<span style="color:#aaa; font-size:12px;">✅ Cerrado</span>`;
 
         tr.innerHTML = `
+          <td><span style="font-size:11px; font-weight:bold; color:${esInstitucional ? '#888' : '#aaa'};">${row[7]}</span></td>
           <td class="td-prov">${row[0]}</td>
           <td>${row[1]}</td>
           <td>${row[2]}</td>
@@ -527,7 +473,6 @@ function aplicarFiltros() {
           <td>${estatusBadge}</td>
           <td class="td-monto">${formatter.format(row[4])}</td>
           <td style="text-align: center;">${botonAccion}</td>
-          <td>${row[7]}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -575,9 +520,8 @@ function aplicarFiltros() {
         estatusHomologado: document.getElementById('formEstatus').value
       };
 
-      if (!payload.proveedor || !payload.paciente || !payload.monto) {
-        alert("Llena los campos de Proveedor, Paciente y Monto."); return;
-      }
+      if (!payload.proveedor || !payload.paciente || !payload.monto) { alert("Llena los campos de Proveedor, Paciente y Monto."); return; }
+      
       const btn = document.getElementById('btnGuardar');
       btn.innerText = "Guardando..."; btn.disabled = true;
 
