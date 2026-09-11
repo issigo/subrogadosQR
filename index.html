@@ -293,6 +293,7 @@
     Chart.register(ChartDataLabels);
     const API_URL = "https://script.google.com/macros/s/AKfycbzSnX6mk5vObtXlEcOcPIlHZXUFUSABdA6Fy1MliCpMdWYSIQqM5RTIi2FKNBXZcNoj9Q/exec"; 
     const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+    let cacheDatos = {};:
     
     let donutChart = null, barChart = null, leadTimeChart = null;
     let tablaGlobal = [], tablaFiltradaActual = [];
@@ -313,35 +314,50 @@
       }
     }
 
-    function loadData() {
+
+function loadData() {
       const unidad = document.getElementById('hospitalSelect').value;
-      const url = API_URL + "?unidad=" + encodeURIComponent(unidad) + "&t=" + new Date().getTime();
       
+      // Si la unidad ya está en memoria, cárgala al instante y cancela la petición a Google
+      if (cacheDatos[unidad]) {
+        pintarDashboard(cacheDatos[unidad]);
+        return;
+      }
+
+      const url = API_URL + "?unidad=" + encodeURIComponent(unidad) + "&t=" + new Date().getTime();
       document.getElementById('loading').style.display = 'block';
       document.getElementById('dashboard-content').style.display = 'none';
 
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          currentData = data; 
-          document.getElementById('kpi-inicial').innerText = formatter.format(9000000);;
-          document.getElementById('kpi-pagado').innerText = formatter.format(data.kpis.montoPagado);
-          document.getElementById('kpi-pendiente').innerText = formatter.format(data.kpis.deudaTotal);
-          document.getElementById('kpi-expedientes').innerText = data.kpis.expedientesPendientes;
-
-          renderCharts(data);
-          tablaGlobal = data.table;
-          llenarSelectProveedores();
-          aplicarFiltros();
-
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('dashboard-content').style.display = 'block';
+          cacheDatos[unidad] = data; // Guardamos la respuesta en la memoria caché
+          pintarDashboard(data);
         })
         .catch(error => {
           console.error("Error al cargar:", error);
           document.getElementById('loading').innerHTML = "Error de conexión. Verifica la URL de tu API.";
         });
     }
+
+    function pintarDashboard(data) {
+      currentData = data; 
+      
+      // KPI Fijo de 9 millones que solicitaste
+      document.getElementById('kpi-inicial').innerText = formatter.format(9000000);
+      document.getElementById('kpi-pagado').innerText = formatter.format(data.kpis.montoPagado);
+      document.getElementById('kpi-pendiente').innerText = formatter.format(data.kpis.deudaTotal);
+      document.getElementById('kpi-expedientes').innerText = data.kpis.expedientesPendientes;
+
+      renderCharts(data);
+      tablaGlobal = data.table;
+      llenarSelectProveedores();
+      aplicarFiltros();
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('dashboard-content').style.display = 'block';
+    }
+  
 
     function renderCharts(data) {
       const chartTextColor = esInstitucional ? '#333333' : '#cccccc';
@@ -552,7 +568,12 @@
       };
 
       if (!payload.fechaPago) { alert("Por favor selecciona una fecha de pago."); return; }
-
+if (result.status === "success") { 
+          alert("¡Registro guardado!"); 
+          cerrarModal(); 
+          cacheDatos = {}; // Borrar memoria para forzar actualización
+          loadData(); 
+        }
       const btn = document.getElementById('btnGuardarEdicion');
       btn.innerText = "Actualizando..."; btn.disabled = true;
 
