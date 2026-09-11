@@ -115,8 +115,7 @@
     @media screen and (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body>
-
+<body class="institucional">
   <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-title">
@@ -296,7 +295,7 @@
     let donutChart = null, barChart = null, leadTimeChart = null;
     let tablaGlobal = [], tablaFiltradaActual = [];
     let currentData = null; 
-    let esInstitucional = false;
+    let esInstitucional = true;
     let currentPage = 1;
     const rowsPerPage = 10;
     let cacheDatos = {}; // Memoria temporal del navegador
