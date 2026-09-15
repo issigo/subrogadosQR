@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dashboard Financiero | Servicios Subrogados | Quintana Roo</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{
+  --qroo-teal:#007F86;
+  --qroo-teal-2:#00A6A6;
+  --qroo-green:#6B8E23;
+  --qroo-gold:#D8A63C;
+  --qroo-navy:#173B4D;
+  --ink:#17303B;
+  --muted:#647680;
+  --bg:#F4F7F8;
+  --card:#FFFFFF;
+  --line:#DCE5E8;
+  --good:#17825B;
+  --warn:#B7791F;
+  --bad:#B43A3A;
+  --shadow:0 8px 24px rgba(23,59,77,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,var(--qroo-navy),var(--qroo-teal));color:#fff;padding:18px 24px 16px;position:sticky;top:0;z-index:20;box-shadow:0 3px 14px rgba(0,0,0,.12)}
+.header-row{display:flex;gap:20px;align-items:center;justify-content:space-between;max-width:1600px;margin:auto}
+.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;font-weight:800;font-size:18px;border:1px solid rgba(255,255,255,.25)}
+.brand h1{font-size:20px;margin:0;font-weight:800;letter-spacing:.1px}.brand small{opacity:.82;display:block;margin-top:2px}
+.actions{display:flex;gap:9px;align-items:center}.btn{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:650}.btn:hover{background:rgba(255,255,255,.2)}
+main{max-width:1600px;margin:0 auto;padding:20px 22px 38px}
+.upload{border:2px dashed #9BC5C8;background:#F7FCFC;border-radius:16px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:15px}.upload.drag{background:#EAF8F8;border-color:var(--qroo-teal-2)}.upload p{margin:0}.upload strong{color:var(--qroo-navy)}
+input[type=file]{display:none}.choose{background:var(--qroo-teal);color:#fff;border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer}.status{font-size:12px;color:var(--muted);margin-top:4px}
+.filters{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:10px;margin-bottom:16px}.field label{display:block;font-size:11px;color:var(--muted);font-weight:750;text-transform:uppercase;letter-spacing:.55px;margin-bottom:5px}.field select,.field input{width:100%;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 10px;color:var(--ink);outline:none}.field select:focus,.field input:focus{border-color:var(--qroo-teal)}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:11px;margin-bottom:15px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow);min-height:112px}.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}.kpi .value{font-size:24px;font-weight:850;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi .sub{font-size:11px;margin-top:6px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}.card .head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line)}.card .head h3{margin:0;font-size:14px}.card .head span{font-size:11px;color:var(--muted)}.chart{height:320px;padding:5px}.chart.tall{height:390px}.map{height:500px;position:relative;background:linear-gradient(180deg,#f7fbfb,#eef5f5);overflow:hidden}.map svg{width:100%;height:100%;display:block}.map-toolbar{position:absolute;top:12px;right:12px;z-index:5;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.map-legend{position:absolute;left:12px;bottom:12px;z-index:5;background:rgba(255,255,255,.94);padding:9px 11px;border:1px solid rgba(220,229,232,.9);border-radius:10px;box-shadow:0 5px 18px rgba(23,59,77,.10);font-size:11px;color:#52656D}.map-legend b{color:var(--qroo-navy)}.map-point{cursor:pointer}.provider-tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line);background:#fbfdfd}.provider-tools input,.provider-tools select{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 9px;color:var(--ink);outline:none;font-size:11px}.provider-tools input{min-width:240px;flex:1}.provider-tools button{border:1px solid #b9d1d3;background:#fff;color:var(--qroo-teal);border-radius:8px;padding:8px 10px;font-size:11px;font-weight:750;cursor:pointer}.provider-tools button:hover{background:#f1f8f8}.table-wrap{overflow:auto;max-height:470px}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-6{grid-column:span 6}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+.insights{padding:14px 15px}.insight{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #EEF2F3}.insight:last-child{border-bottom:0}.dot{width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--qroo-gold);flex:0 0 auto}.insight b{font-size:12px}.insight p{margin:3px 0 0;font-size:12px;color:var(--muted);line-height:1.4}
+.table-wrap{overflow:auto;max-height:470px}.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px}.data-table th{position:sticky;top:0;background:#F7FAFA;color:#52656D;text-align:left;padding:9px;border-bottom:1px solid var(--line);z-index:2}.data-table td{padding:8px 9px;border-bottom:1px solid #EEF2F3;white-space:nowrap}.data-table tr:hover td{background:#FAFDFD}.money{text-align:right;font-variant-numeric:tabular-nums}.pill{display:inline-flex;padding:4px 8px;border-radius:99px;font-weight:700;font-size:10px}.pill.good{background:#E7F6EF;color:#14764F}.pill.warn{background:#FFF4DA;color:#90621D}.pill.bad{background:#FCEAEA;color:#A03838}.pill.neutral{background:#E9EFF2;color:#50616A}
+.empty{height:100%;display:grid;place-items:center;color:#81919A;font-size:13px;padding:50px}.footer-note{color:#718089;font-size:11px;margin-top:14px;line-height:1.5}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(3,1fr)}.span-4,.span-5,.span-6,.span-7,.span-8{grid-column:span 12}}
+@media(max-width:720px){.header-row{align-items:flex-start}.actions{flex-wrap:wrap;justify-content:flex-end}.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}main{padding:13px}.upload{align-items:flex-start;flex-direction:column}.brand h1{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="header-row">
+  <div class="brand"><div class="brand-mark">QR</div><div><h1>Servicios Subrogados · Análisis Financiero</h1><small>Dashboard ejecutivo · Gobierno de Quintana Roo</small></div></div>
+  <div class="actions"><button class="btn" id="resetBtn">Restablecer filtros</button><button class="btn" id="exportBtn">Exportar vista CSV</button></div>
+</div></header>
+<main>
+  <section class="upload" id="dropZone"><div><strong>Arrastra aquí tu archivo Excel</strong><p>El archivo se procesa dentro de este navegador. No se envían los registros a un servidor.</p><div class="status" id="fileStatus">No hay archivo cargado.</div></div><label class="choose">Seleccionar Excel<input id="fileInput" type="file" accept=".xlsx,.xls,.csv"/></label></section>
+  <section class="filters" id="filters"></section>
+  <section class="kpis" id="kpis"></section>
+  <section class="grid">
+    <div class="card span-8"><div class="head"><h3>Evolución financiera</h3><span>Haz clic en una serie o punto para filtrar</span></div><div id="trend" class="chart tall"></div></div>
+    <div class="card span-4"><div class="head"><h3>Distribución por estatus</h3><span>clic para filtrar</span></div><div id="statusChart" class="chart tall"></div></div>
+    <div class="card span-5"><div class="head"><h3>Principales hospitales / unidades</h3><span>monto total y pendiente</span></div><div id="unitsChart" class="chart"></div></div>
+    <div class="card span-7"><div class="head"><h3>Principales proveedores</h3><span>clic en una barra para filtrar</span></div><div id="providersChart" class="chart"></div><div class="provider-tools"><input id="providerSearch" type="search" placeholder="Buscar proveedor..." aria-label="Buscar proveedor"><select id="providerExact"><option value="">Todos los proveedores</option></select><button id="providerClear" type="button">Limpiar</button></div></div>
+    <div class="card span-7"><div class="head"><h3>Mapa vectorial de unidades</h3><span>usa las coordenadas del Excel · clic en un punto para filtrar</span></div><div id="map" class="map"></div></div>
+    <div class="card span-5"><div class="head"><h3>Hallazgos automáticos</h3><span>se actualizan con filtros</span></div><div id="insights" class="insights"></div></div>
+    <div class="card span-12"><div class="head"><h3>Detalle de registros</h3><span id="rowCount">0 registros</span></div><div class="table-wrap"><table class="data-table"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div></div>
+  </section>
+  <div class="footer-note">Privacidad: el procesamiento del Excel ocurre en el navegador mediante JavaScript. Las librerías visuales se cargan desde CDN cuando existe conexión a internet, pero los datos del archivo no se suben ni se transmiten. El mapa vectorial utiliza directamente LATITUD y LONGITUD del Excel; registros sin coordenadas válidas no se dibujan en el mapa.</div>
+</main>
+<script>
+const state={rows:[], filtered:[], cols:[], filters:{}, providerView:'', providerExact:'', mapZoom:1};
+const COLORS=['#007F86','#173B4D','#D8A63C','#6B8E23','#00A6A6','#6B7B83','#7D5A50','#8C6FB6','#3C8DAD','#B45F06'];
+const aliases={
+ budget:['presupuesto','recurso','presupuesto asignado'],
+ id:['id','folio','numero','número'],
+ unit:['unidad / hospital','unidad/hospital','hospital','unidad'],
+ provider:['proveedor','prestador','empresa'],
+ service:['servicio subrogado','servicio','tipo servicio'],
+ request:['tipo solicitud','tipo de solicitud'],
+ patient:['paciente','beneficiario'],
+ total:['monto total ($)','monto total','importe','monto facturado'],
+ paid:['monto pagado','pagado','importe pagado'],
+ pending:['monto pendiente','pendiente','saldo pendiente','deuda activa'],
+ deficit:['deficit','déficit'],
+ detailStatus:['estatus detallado','estatus'],
+ status:['estatus homologado','estatus homologado'],
+ ownDate:['fecha de entrega ingresos propios','fecha entrega ingresos propios'],
+ radDate:['fecha de radicacion','fecha de radicación','fecha radicado','fecha'],
+ municipality:['municipio','municipality'],
+ latitude:['latitud','latitude','lat'],
+ longitude:['longitud','longitude','lon','lng']
+};
+function norm(s){return String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ')}
+function findCol(headers, keys){const h=headers.map(norm); for(const k of keys){const i=h.indexOf(norm(k));if(i>=0)return headers[i]} for(const k of keys){const nk=norm(k); const i=h.findIndex(x=>x.includes(nk)||nk.includes(x));if(i>=0)return headers[i]} return null}
+function cleanNumber(v){if(v===null||v===undefined||v==='')return 0;if(typeof v==='number')return Number.isFinite(v)?v:0;let s=String(v).replace(/[$,%\s,]/g,'').replace(/\(([^)]+)\)/,'-$1'); const n=Number(s); return Number.isFinite(n)?n:0}
+function parseDate(v){if(!v)return null;if(v instanceof Date&&!isNaN(v))return v; if(typeof v==='number'&&window.XLSX&&XLSX.SSF){const d=XLSX.SSF.parse_date_code(v); if(d)return new Date(d.y,d.m-1,d.d)} const s=String(v).trim(); const d=new Date(s); if(!isNaN(d))return d; const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/); if(m){let y=+m[3];if(y<100)y+=2000;const dt=new Date(y,+m[2]-1,+m[1]);return isNaN(dt)?null:dt} return null}
+function fmtMoney(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n||0)}
+function fmtMoney2(n){return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(n||0)}
+function fmtPct(n){return (n||0).toLocaleString('es-MX',{maximumFractionDigits:1})+'%'}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function colValue(r, key){const c=state.cols[key];return c?r[c]:''}
+function labelStatus(s){const n=norm(s); if(!s)return 'SIN ESTATUS'; if(n.includes('pagado'))return 'PAGADO'; if(n.includes('pendiente')||n.includes('radic'))return 'PENDIENTE'; if(n.includes('devol')||n.includes('cancel'))return 'DEVUELTO / CANCELADO'; return String(s)}
+function statusClass(s){const n=norm(s);if(n.includes('pagado'))return 'good';if(n.includes('pend')||n.includes('radic'))return 'warn';if(n.includes('devol')||n.includes('cancel'))return 'bad';return 'neutral'}
+function prepare(raw){
+  const headers=Object.keys(raw[0]||{}); state.cols={}; for(const k in aliases)state.cols[k]=findCol(headers,aliases[k]);
+  state.rows=raw.filter(r=>Object.values(r).some(v=>v!==null&&v!==''&&v!==undefined)).map((r,idx)=>{
+    const total=cleanNumber(colValueRaw(r,state.cols.total));
+    const paid=cleanNumber(colValueRaw(r,state.cols.paid));
+    let pending=state.cols.pending?cleanNumber(colValueRaw(r,state.cols.pending)):Math.max(total-paid,0);
+    const status=labelStatus(colValueRaw(r,state.cols.status)||colValueRaw(r,state.cols.detailStatus));
+    const d=parseDate(colValueRaw(r,state.cols.radDate)||colValueRaw(r,state.cols.ownDate));
+    return {...r,__i:idx,__total:total,__paid:paid,__pending:pending,__budget:cleanNumber(colValueRaw(r,state.cols.budget)),__deficit:cleanNumber(colValueRaw(r,state.cols.deficit)),__unit:String(colValueRaw(r,state.cols.unit)||'SIN UNIDAD').trim()||'SIN UNIDAD',__provider:String(colValueRaw(r,state.cols.provider)||'SIN PROVEEDOR').trim()||'SIN PROVEEDOR',__service:String(colValueRaw(r,state.cols.service)||'SIN SERVICIO').trim()||'SIN SERVICIO',__municipality:String(colValueRaw(r,state.cols.municipality)||'').trim(),__lat:cleanNumber(colValueRaw(r,state.cols.latitude)),__lon:cleanNumber(colValueRaw(r,state.cols.longitude)),__status:status,__date:d};
+  });
+}
+function colValueRaw(r,c){return c?r[c]:''}
+function unique(key){return [...new Set(state.rows.map(r=>r[key]).filter(Boolean).map(String))].sort((a,b)=>a.localeCompare(b,'es',{numeric:true,sensitivity:'base'}))}
+function makeFilters(){
+ const defs=[['unit','Hospital / unidad'],['provider','Proveedor'],['service','Servicio'],['status','Estatus'],['month','Periodo']]; const box=document.getElementById('filters');box.innerHTML='';
+ defs.forEach(([key,label])=>{const div=document.createElement('div');div.className='field';const lab=document.createElement('label');lab.textContent=label;div.appendChild(lab);const sel=document.createElement('select');sel.id='f-'+key;sel.innerHTML='<option value="">Todos</option>';let vals=[];if(key==='unit')vals=unique('__unit');if(key==='provider')vals=unique('__provider');if(key==='service')vals=unique('__service');if(key==='status')vals=unique('__status');if(key==='month')vals=[...new Set(state.rows.map(r=>r.__date?new Intl.DateTimeFormat('es-MX',{year:'numeric',month:'short'}).format(r.__date):'Sin fecha').filter(Boolean))].sort();vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)});sel.onchange=()=>{state.filters[key]=sel.value;applyFilters()};div.appendChild(sel);box.appendChild(div)})
+}
+function applyFilters(extra={}){state.filters={...state.filters,...extra}; state.filtered=state.rows.filter(r=>{
+ if(state.filters.unit&&r.__unit!==state.filters.unit)return false;if(state.filters.provider&&r.__provider!==state.filters.provider)return false;if(state.filters.service&&r.__service!==state.filters.service)return false;if(state.filters.status&&r.__status!==state.filters.status)return false;if(state.filters.month){const m=r.__date?new Intl.DateTimeFormat('es-MX',{year:'numeric',month:'short'}).format(r.__date):'Sin fecha';if(m!==state.filters.month)return false} return true;}); syncFilterInputs();renderAll()}
+function syncFilterInputs(){Object.entries(state.filters).forEach(([k,v])=>{const el=document.getElementById('f-'+k);if(el)el.value=v||''})}
+function renderAll(){renderKPIs();renderCharts();renderMap();renderInsights();renderTable()}
+function renderKPIs(){const rows=state.filtered;const sum=k=>rows.reduce((a,r)=>a+(r[k]||0),0);const total=sum('__total'),paid=sum('__paid'),pending=sum('__pending'),budget=sum('__budget'),deficit=sum('__deficit');const payRate=total?paid/total*100:0;const active=rows.filter(r=>norm(r.__status).includes('pend')).length;const providers=new Set(rows.map(r=>r.__provider).filter(Boolean)).size;const vals=[['Monto facturado',fmtMoney(total),`${rows.length.toLocaleString('es-MX')} registros`],['Monto pagado',fmtMoney(paid),`${fmtPct(payRate)} del facturado`],['Deuda activa',fmtMoney(pending),`${active.toLocaleString('es-MX')} casos pendientes`],['Presupuesto',fmtMoney(budget),budget?`${fmtPct(total/budget*100)} comprometido`: 'Sin dato'],['Déficit',fmtMoney(deficit),deficit? 'Revisar cobertura presupuestal':'Sin déficit registrado'],['Proveedores',providers.toLocaleString('es-MX'),`${new Set(rows.map(r=>r.__unit)).size.toLocaleString('es-MX')} unidades`]];document.getElementById('kpis').innerHTML=vals.map(v=>`<div class="kpi"><div class="label">${v[0]}</div><div class="value">${v[1]}</div><div class="sub">${v[2]}</div></div>`).join('')}
+function baseLayout(title){return {margin:{l:55,r:25,t:20,b:50},paper_bgcolor:'#fff',plot_bgcolor:'#fff',font:{family:'Inter, system-ui, sans-serif',color:'#17303B',size:11},hoverlabel:{font:{size:11}},showlegend:false}}
+function clickFilter(handler){return {plotly_click:handler}}
+function renderCharts(){
+ const rows=state.filtered;
+ // trend
+ const byMonth={}; rows.forEach(r=>{if(!r.__date)return;const k=r.__date.toISOString().slice(0,7);if(!byMonth[k])byMonth[k]={total:0,paid:0,pending:0};byMonth[k].total+=r.__total;byMonth[k].paid+=r.__paid;byMonth[k].pending+=r.__pending});const keys=Object.keys(byMonth).sort();const labels=keys.map(k=>{const [y,m]=k.split('-');return new Intl.DateTimeFormat('es-MX',{month:'short',year:'2-digit'}).format(new Date(+y,+m-1,1))});Plotly.newPlot('trend',[{x:labels,y:keys.map(k=>byMonth[k].total),name:'Facturado',mode:'lines+markers',line:{color:COLORS[0],width:3},customdata:keys,hovertemplate:'%{x}<br>Facturado: %{y:$,.0f}<extra></extra>'},{x:labels,y:keys.map(k=>byMonth[k].paid),name:'Pagado',mode:'lines+markers',line:{color:COLORS[2],width:2},customdata:keys,hovertemplate:'%{x}<br>Pagado: %{y:$,.0f}<extra></extra>'},{x:labels,y:keys.map(k=>byMonth[k].pending),name:'Pendiente',mode:'lines+markers',line:{color:COLORS[3],width:2},customdata:keys,hovertemplate:'%{x}<br>Pendiente: %{y:$,.0f}<extra></extra>'}],{...baseLayout(),margin:{l:65,r:20,t:20,b:55},showlegend:true,legend:{orientation:'h',y:1.12,x:0},xaxis:{showgrid:false},yaxis:{gridcolor:'#EEF2F3',tickprefix:'$ ',tickformat:'.2s'}},{responsive:true,displayModeBar:false});
+ // status
+ const st={};rows.forEach(r=>st[r.__status]=(st[r.__status]||0)+1);const sk=Object.keys(st).sort((a,b)=>st[b]-st[a]);Plotly.newPlot('statusChart',[{labels:sk,values:sk.map(k=>st[k]),type:'pie',hole:.58,textinfo:'percent',hovertemplate:'%{label}<br>%{value} registros<extra></extra>',marker:{colors:sk.map((_,i)=>COLORS[i%COLORS.length])}}],{...baseLayout(),margin:{l:10,r:10,t:15,b:10}}, {responsive:true,displayModeBar:false});
+ document.getElementById('statusChart').on('plotly_click',e=>{if(e.points[0])applyFilters({status:e.points[0].label})});
+ // units
+ const units=aggTop(rows,'__unit','__total',8);const xu=units.map(x=>x.name).reverse();Plotly.newPlot('unitsChart',[{x:units.map(x=>x.total).reverse(),y:xu,type:'bar',orientation:'h',marker:{color:COLORS[0]},customdata:units.map(x=>x.name).reverse(),hovertemplate:'%{y}<br>Total: %{x:$,.0f}<extra></extra>'}],{...baseLayout(),margin:{l:145,r:20,t:10,b:45},xaxis:{gridcolor:'#EEF2F3',tickprefix:'$ ',tickformat:'.2s'},yaxis:{automargin:true}},{responsive:true,displayModeBar:false});document.getElementById('unitsChart').on('plotly_click',e=>{if(e.points[0])applyFilters({unit:e.points[0].customdata})});
+ // providers
+ const prov=aggTop(rows,'__provider','__total',10);Plotly.newPlot('providersChart',[{x:prov.map(x=>x.total).reverse(),y:prov.map(x=>x.name).reverse(),type:'bar',orientation:'h',marker:{color:COLORS[2]},customdata:prov.map(x=>x.name).reverse(),hovertemplate:'%{y}<br>Total: %{x:$,.0f}<extra></extra>'}],{...baseLayout(),margin:{l:180,r:20,t:10,b:45},xaxis:{gridcolor:'#EEF2F3',tickprefix:'$ ',tickformat:'.2s'},yaxis:{automargin:true}},{responsive:true,displayModeBar:false});document.getElementById('providersChart').on('plotly_click',e=>{if(e.points[0])applyFilters({provider:e.points[0].customdata})});
+ renderProviderTools();
+}
+function aggTop(rows,key,metric,n){const m={};rows.forEach(r=>{const name=r[key]||'SIN DATO';m[name]=(m[name]||0)+(r[metric]||0)});return Object.entries(m).map(([name,total])=>({name,total})).sort((a,b)=>b.total-a.total).slice(0,n)}
+function projectGeo(lat,lon,bounds,w,h){
+ const [[minLon,minLat],[maxLon,maxLat]]=bounds;
+ const pad=42;
+ const x=pad+(lon-minLon)/(maxLon-minLon)*(w-2*pad);
+ const y=pad+(maxLat-lat)/(maxLat-minLat)*(h-2*pad);
+ return [x,y];
+}
+function pathFromCoords(coords,bounds,w,h){return coords.map((p,i)=>{const [x,y]=projectGeo(p[1],p[0],bounds,w,h);return `${i?'L':'M'} ${x.toFixed(1)} ${y.toFixed(1)}`}).join(' ')+' Z'}
+function renderMap(){
+ const el=document.getElementById('map');
+ const w=Math.max(700,el.clientWidth||900),h=Math.max(440,el.clientHeight||500);
+ // Vector outline of Quintana Roo, kept intentionally simple so it remains razor-sharp at any zoom.
+ const qroo=[[-87.63,21.62],[-87.18,21.58],[-86.96,21.54],[-86.82,21.36],[-86.72,21.10],[-86.78,20.78],[-86.91,20.50],[-87.05,20.31],[-87.17,20.08],[-87.29,19.84],[-87.53,19.57],[-87.74,19.30],[-87.95,19.10],[-88.13,18.83],[-88.31,18.56],[-88.62,18.35],[-88.75,18.18],[-88.77,18.75],[-88.63,19.17],[-88.52,19.54],[-88.39,19.95],[-88.26,20.36],[-88.12,20.79],[-87.99,21.08],[-87.84,21.35],[-87.63,21.62]];
+ const bounds=[[-89.05,18.0],[-86.45,22.0]];
+ const outline=pathFromCoords(qroo,bounds,w,h);
+ const groups={};
+ state.filtered.forEach(r=>{
+   const lat=r.__lat,lon=r.__lon;
+   if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180||(lat===0&&lon===0))return;
+   const k=`${r.__unit}|${lat.toFixed(6)}|${lon.toFixed(6)}`;
+   if(!groups[k])groups[k]={unit:r.__unit,municipality:r.__municipality,total:0,pending:0,count:0,lat,lon};
+   groups[k].total+=r.__total;groups[k].pending+=r.__pending;groups[k].count++;
+ });
+ const pts=Object.values(groups);
+ const circles=pts.map((g,i)=>{const [x,y]=projectGeo(g.lat,g.lon,bounds,w,h);const radius=Math.max(6,Math.min(22,6+Math.log10(g.total+1)*3));const label=esc(g.unit);return `<g class="map-point" data-unit="${esc(g.unit)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${radius.toFixed(1)}" fill="#00A6A6" fill-opacity=".78" stroke="#173B4D" stroke-width="2"><title>${label}\n${g.municipality?g.municipality+'\n':''}Monto: ${fmtMoney(g.total)}\nPendiente: ${fmtMoney(g.pending)}</title></circle><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#fff"/><text x="${(x+radius+5).toFixed(1)}" y="${(y+4).toFixed(1)}" font-size="10" font-weight="700" fill="#24414C">${label.length>26?label.slice(0,24)+'…':label}</text></g>`}).join('');
+ const valid=pts.length?`<path d="${outline}" fill="#eaf4f3" stroke="#007F86" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`:`<path d="${outline}" fill="#edf4f4" stroke="#b8ced0" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`;
+ const labels=[['Cancún',21.16,-86.85],['Playa del Carmen',20.63,-87.07],['Tulum',20.21,-87.46],['Chetumal',18.50,-88.30]];
+ const cityLabels=labels.map(([name,lat,lon])=>{const [x,y]=projectGeo(lat,lon,bounds,w,h);return `<text x="${x}" y="${y}" font-size="11" fill="#61747B" font-weight="650">${name}</text>`}).join('');
+ el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa vectorial de unidades de Quintana Roo">${valid}<path d="${outline}" fill="none" stroke="#9FC1C3" stroke-width="1" stroke-dasharray="3 5" opacity=".5" vector-effect="non-scaling-stroke"/>${cityLabels}${circles}</svg><div class="map-legend"><b>${pts.length.toLocaleString('es-MX')}</b> ubicaciones · <b>${state.filtered.filter(r=>Number.isFinite(r.__lat)&&Number.isFinite(r.__lon)).length.toLocaleString('es-MX')}</b> registros con coordenadas<br><span>El tamaño del punto representa el monto total.</span></div>`;
+ el.querySelectorAll('.map-point').forEach(node=>node.addEventListener('click',()=>applyFilters({unit:node.dataset.unit})));
+}
+function renderProviderTools(){
+ const inp=document.getElementById('providerSearch'), sel=document.getElementById('providerExact'), clear=document.getElementById('providerClear');
+ if(!inp||!sel)return;
+ const providers=unique('__provider');
+ const current=sel.value;
+ sel.innerHTML='<option value="">Todos los proveedores</option>'+providers.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
+ if(providers.includes(current))sel.value=current;
+ inp.value=state.providerView||'';
+ inp.oninput=()=>{state.providerView=inp.value.trim().toLowerCase();renderTable()};
+ sel.onchange=()=>{state.providerExact=sel.value;renderTable()};
+ clear.onclick=()=>{state.providerView='';state.providerExact='';inp.value='';sel.value='';renderTable()};
+}
+function renderInsights(){const r=state.filtered;if(!r.length){document.getElementById('insights').innerHTML='<div class="empty">Sin datos para los filtros actuales.</div>';return}const total=r.reduce((a,x)=>a+x.__total,0),pending=r.reduce((a,x)=>a+x.__pending,0),paid=r.reduce((a,x)=>a+x.__paid,0);const topP=aggTop(r,'__provider','__total',1)[0],topU=aggTop(r,'__unit','__pending',1)[0],topS=aggTop(r,'__service','__total',1)[0];const days=r.map(x=>{if(!x.__date)return null;const end=x.__date;const now=new Date();return Math.max(0,(now-end)/86400000)}).filter(Number.isFinite);const avgDays=days.length?days.reduce((a,b)=>a+b,0)/days.length:null;const items=[];if(total)items.push(`<b>${fmtPct(paid/total*100)}</b> del monto total está pagado, con <b>${fmtMoney(pending)}</b> todavía pendiente.`);if(topP)items.push(`El proveedor con mayor monto acumulado es <b>${esc(topP.name)}</b>, con <b>${fmtMoney(topP.total)}</b>.`);if(topU)items.push(`La unidad con mayor deuda activa es <b>${esc(topU.name)}</b>, concentrando <b>${fmtMoney(topU.total)}</b> pendiente.`);if(topS)items.push(`El servicio de mayor impacto financiero es <b>${esc(topS.name)}</b>, con <b>${fmtMoney(topS.total)}</b>.`);if(avgDays!==null)items.push(`Antigüedad media aproximada de los registros con fecha: <b>${avgDays.toFixed(0)} días</b>. Esto funciona como indicador de antigüedad, no como tiempo de pago real cuando falta fecha de liquidación.`);document.getElementById('insights').innerHTML=items.map((x,i)=>`<div class="insight"><span class="dot" style="background:${COLORS[i%COLORS.length]}"></span><div><p>${x}</p></div></div>`).join('')}
+function renderTable(){
+ const headers=['ID','Unidad / Hospital','Proveedor','Servicio','Estatus','Monto total','Pagado','Pendiente','Fecha'];
+ document.getElementById('tableHead').innerHTML='<tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr>';
+ const search=state.providerView||'', exact=state.providerExact||'';
+ const rows=state.filtered.filter(r=>{const p=r.__provider||'';return (!exact||p===exact)&&(!search||p.toLowerCase().includes(search))});
+ const max=500;
+ document.getElementById('tableBody').innerHTML=rows.slice(0,max).map(r=>`<tr><td>${esc(colValue(r,'id')||r.__i+1)}</td><td>${esc(r.__unit)}</td><td><button class="table-provider-link" data-provider="${esc(r.__provider)}" style="border:0;background:none;padding:0;color:#007F86;font-weight:750;cursor:pointer;text-align:left">${esc(r.__provider)}</button></td><td>${esc(r.__service)}</td><td><span class="pill ${statusClass(r.__status)}">${esc(r.__status)}</span></td><td class="money">${fmtMoney2(r.__total)}</td><td class="money">${fmtMoney2(r.__paid)}</td><td class="money">${fmtMoney2(r.__pending)}</td><td>${r.__date?new Intl.DateTimeFormat('es-MX').format(r.__date):''}</td></tr>`).join('');
+ document.getElementById('rowCount').textContent=`${rows.length.toLocaleString('es-MX')} registros${rows.length>max?' · mostrando 500':''}${(search||exact)?' · proveedor filtrado':''}`;
+ document.querySelectorAll('.table-provider-link').forEach(b=>b.onclick=()=>applyFilters({provider:b.dataset.provider}));
+}
+function loadData(raw,fileName){prepare(raw);document.getElementById('fileStatus').textContent=`${fileName} · ${state.rows.length.toLocaleString('es-MX')} registros · hoja procesada localmente`;makeFilters();state.filters={};applyFilters()}
+async function readFile(file){const ext=file.name.toLowerCase().split('.').pop();if(ext==='csv'){const text=await file.text();const wb=XLSX.read(text,{type:'string'});const ws=wb.Sheets[wb.SheetNames[0]];loadData(XLSX.utils.sheet_to_json(ws,{defval:''}),file.name);return}const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array',cellDates:true});const name=wb.SheetNames[0];const ws=wb.Sheets[name];loadData(XLSX.utils.sheet_to_json(ws,{defval:''}),file.name)}
+const input=document.getElementById('fileInput'),drop=document.getElementById('dropZone');input.addEventListener('change',e=>{const f=e.target.files[0];if(f)readFile(f)});['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(evt=>drop.addEventListener(evt,e=>{e.preventDefault();drop.classList.remove('drag')}));drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)readFile(f)});
+document.getElementById('resetBtn').onclick=()=>{state.filters={};applyFilters()};
+document.getElementById('exportBtn').onclick=()=>{const rows=state.filtered.map(r=>({ID:colValue(r,'id')||r.__i+1,'Unidad / Hospital':r.__unit,'Proveedor':r.__provider,'Servicio':r.__service,'Estatus':r.__status,'Monto total':r.__total,'Pagado':r.__paid,'Pendiente':r.__pending,'Déficit':r.__deficit,'Fecha':r.__date?r.__date.toISOString().slice(0,10):''}));const csv=[Object.keys(rows[0]||{Mensaje:''}).join(','),...rows.map(o=>Object.values(o).map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))].join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vista_dashboard_subrogados.csv';a.click();URL.revokeObjectURL(a.href)};
+// estado inicial visual
+state.filtered=[];renderAll();
+</script>
+</body>
+</html>
