@@ -440,12 +440,43 @@
 
       // 3. Lead Time Semáforo
       if(leadTimeChart instanceof Chart) leadTimeChart.destroy();
-      const ctxLead = document.getElementById('leadTimeChart').getContext('2d');
-      leadTimeChart = new Chart(ctxLead, {
-        type: 'bar', plugins: [ChartDataLabels],
-        data: { labels: data.graficaLeadTime.labels, datasets: [{ data: data.graficaLeadTime.values, backgroundColor: function(ctx) { const dias = ctx.raw; if (dias > 60) return esInstitucional ? '#611232' : '#8b1c3f'; if (dias > 30) return esInstitucional ? '#b99725' : '#d3a32a'; return '#4caf50'; }, borderRadius: 2 }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 50 } }, plugins: { title: { display: true, text: 'Lead Time (Días Promedio de Pago)', color: chartTitleColor, font: { size: 14, weight: 'bold' } }, legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: chartTextColor, font: { weight: 'bold', size: 11 }, formatter: val => val + " Días" } }, scales: { x: { grid: { color: chartGridColor }, ticks: { color: chartTextColor } }, y: { grid: { display: false }, ticks: { color: chartTextColor } } } }
-      });
+// 3. Lead Time (Custom HTML de Bloques Inclinados)
+      document.getElementById('lt-title').style.color = chartTitleColor;
+      const ltContainer = document.getElementById('leadTimeContainer');
+      ltContainer.innerHTML = '';
+      
+      const ltLabels = data.graficaLeadTime.labels;
+      const ltValues = data.graficaLeadTime.values;
+      
+      for(let i = 0; i < ltLabels.length; i++) {
+        let dias = ltValues[i];
+        
+        // Calculamos 1 bloque por cada 7 días de deuda (ajústalo si quieres que se vea más corto/largo)
+        let numBlocks = Math.max(1, Math.ceil(dias / 7));
+        if (dias === 0) numBlocks = 0; // Si es 0, no pinta bloques
+        
+        // Colores según semáforo y tema institucional
+        let colorBloque = '#4caf50'; // Verde por defecto
+        if (dias > 60) colorBloque = esInstitucional ? '#8b1c3f' : '#d32f2f'; // Guinda / Rojo
+        else if (dias > 30) colorBloque = esInstitucional ? '#b99725' : '#ff9800'; // Dorado / Naranja
+        
+        // Generar la cadena de bloques HTML
+        let blocksHtml = '';
+        for(let b = 0; b < numBlocks; b++) {
+          blocksHtml += `<div class="lt-block" style="background-color: ${colorBloque};"></div>`;
+        }
+        
+        // Inyectar la fila completa
+        ltContainer.innerHTML += `
+          <div class="lt-row">
+            <div class="lt-label" style="color: ${chartTextColor}">${ltLabels[i]}</div>
+            <div class="lt-bars">
+              ${blocksHtml}
+              <div class="lt-value" style="color: ${chartTextColor}">${dias} Días</div>
+            </div>
+          </div>
+        `;
+      }
     }
 
     // ==========================================
