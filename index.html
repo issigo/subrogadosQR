@@ -113,6 +113,30 @@
       body { padding: 10px; }
     }
     @media screen and (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+
+    /* ==========================================
+       GRÁFICA CUSTOM LEAD TIME (BLOQUES INCLINADOS)
+       ========================================== */
+    .leadtime-wrapper { padding: 10px 20px; }
+    .leadtime-title { font-size: 14px; font-weight: bold; margin-bottom: 25px; text-align: center; }
+    .lt-row { display: flex; align-items: center; margin-bottom: 12px; }
+    .lt-label {
+      width: 180px; font-size: 11px; font-weight: bold; text-transform: uppercase; 
+      position: relative; padding-left: 15px; letter-spacing: 0.5px;
+    }
+    /* La línea punteada del eje Y */
+    .lt-label::before {
+      content: ''; position: absolute; left: 0; top: -8px; bottom: -8px;
+      border-left: 2px dotted #888; opacity: 0.5;
+    }
+    .lt-bars { display: flex; align-items: center; flex: 1; flex-wrap: wrap; gap: 4px; }
+    /* El bloque inclinado */
+    .lt-block { 
+      width: 14px; height: 14px; transform: skew(-20deg); 
+      border-radius: 2px; transition: all 0.3s;
+    }
+    .lt-value { margin-left: 12px; font-weight: bold; font-size: 13px; }
   </style>
 </head>
 <body class="institucional">
@@ -233,9 +257,16 @@
       <div class="chart-card"><canvas id="barChart"></canvas></div>
     </div>
 
-    <!-- Gráfica Inferior -->
+<!-- Gráfica Inferior (Custom Lead Time) -->
     <div class="charts-grid-bottom">
-      <div class="chart-card"><canvas id="leadTimeChart"></canvas></div>
+      <div class="chart-card" style="height: auto; min-height: 250px;">
+        <div class="leadtime-wrapper">
+          <div class="leadtime-title" id="lt-title">Lead Time (Días Promedio de Pago)</div>
+          <div id="leadTimeContainer">
+            <!-- Las barras se inyectarán aquí dinámicamente -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Tabla y Filtros -->
